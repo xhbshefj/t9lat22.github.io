@@ -541,8 +541,8 @@ backdrop-filter: blur(15px);
 <div id="widgetDiv">
 
 
-  <h1 class="gtext">It is</h1>
-    <h1  id="time" class="gtext"></h1>
+  <h1 class="gtext">And it is</h1>
+    <h1  id="wtime" class="gtext"></h1>
 
     
 
@@ -1292,6 +1292,14 @@ backdrop-filter: blur(15px);
       hiddenDiv.style.display = 'none';
     }
   });
+</script>
+<script>
+    function updateTime() {
+  var date = new Date();
+  var options = { hour: 'numeric', minute: 'numeric',  hour12: true };
+  var formattedTime = date.toLocaleTimeString('en-US', options);
+  document.getElementById("wtime").innerHTML = formattedTime;
+  }
 </script>
 
 <script>
