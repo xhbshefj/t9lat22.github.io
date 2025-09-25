@@ -8,7 +8,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, onDisconnect, remove } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push, onDisconnect, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     // 🔥 Your Firebase config
     const firebaseConfig = {
@@ -29,16 +29,18 @@
     // Reference for connections
     const connectionsRef = ref(db, "connections");
 
-    // Add this user to the list
+    // Create a new unique connection for THIS user
     const myConnection = push(connectionsRef);
-    myConnection.set(true);
 
-    // Remove on disconnect
+    // Mark myself as connected
+    set(myConnection, true);
+
+    // Remove me when I disconnect
     onDisconnect(myConnection).remove();
 
-    // Update counter
+    // Update live user count
     onValue(connectionsRef, (snapshot) => {
-      document.getElementById("count").innerText = snapshot.size || snapshot.numChildren();
+      document.getElementById("count").innerText = snapshot.size ?? snapshot.numChildren();
     });
   </script>
 </body>
