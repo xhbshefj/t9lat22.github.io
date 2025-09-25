@@ -343,6 +343,7 @@ border: 1px solid rgba(255, 255, 255, 0.15);
 
   /* Logo Styles */
   #logo {
+    display:none;
     inset: 0;
     margin:auto;
       position:fixed;
@@ -1240,10 +1241,10 @@ if (selectedBackground) {
   const img = document.getElementById("logo");
 
   btn.addEventListener("click", () => {
-    if (img.style.display === "none") {
-      img.style.display = "block"; 
+    if (img.style.display === "block") {
+      img.style.display = "none"; 
     } else {
-      img.style.display = "none";  
+      img.style.display = "block";  
     }
   });
 </script>
