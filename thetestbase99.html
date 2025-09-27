@@ -280,6 +280,26 @@ border: 1px solid rgba(255, 255, 255, 0.15);
       animation: popIn 0.5s ease-out forwards;
 
   }
+   #hacksDiv {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+  background: rgba(0, 0, 0, 0.3); 
+border: 1px solid rgba(255, 255, 255, 0.15);  
+    color: white;
+    inset: 0;
+    margin:auto;
+    position: fixed;
+    z-index: 1000;
+    border-radius:20px; 
+    opacity:85%; 
+    width:600px;
+    height: 500px; 
+    overflow-x: hidden;
+    overflow-y: auto;
+      animation: popIn 0.5s ease-out forwards;
+
+  }
    #emulatorDiv {
     display: none;
     margin-top: 20px;
@@ -621,7 +641,7 @@ backdrop-filter: blur(7px);
            
 </div>
 
-<div id="soundDiv">
+<div id="hacksDiv">
   <button class="close-btn" onclick="document.getElementById('soundDiv').style.display = 'none';">●</button>
   <h1 class="gtext"> Bookmarklets </h1>
   <p color="white" style="text-align: center;">Drag the buttons to ur bookmarks bar.</p>
