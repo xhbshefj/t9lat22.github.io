@@ -1,748 +1,570 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>T9 OS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>T9 OS — Optimized Launcher</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Luckiest+Guy&display=swap" rel="stylesheet">
-
-  <!-- Optional AdSense (left from original) -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7134787026595240"
-     crossorigin="anonymous"></script>
-
-  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <!-- Google font (light) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
   <style>
-    /* --------------------
-       Base / Layout
-       -------------------- */
+    /* -------------------
+       Variables & Reset
+       ------------------- */
     :root{
-      --bg-top: #120016;
-      --bg-bottom: #000;
-      --panel-bg: rgba(20,20,20,0.5);
-      --glass: rgba(255,255,255,0.06);
-      --accent: #7a29ff;
-      --soft-white: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.65);
-      --radius: 16px;
+      --bg-1:#06060a;
+      --bg-2:#120018;
+      --accent:#7b3cff;
+      --muted:#9aa0a6;
+      --glass: rgba(255,255,255,0.04);
+      --card: rgba(255,255,255,0.03);
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: 'Poppins', Arial, sans-serif;
-      background: linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
-      color: white;
+      font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      color:#fff;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
-      overflow-x:hidden;
-    }
-
-    h1,h2,h3{font-family:'Luckiest Guy', cursive; margin:8px 0; letter-spacing:0.5px}
-    p{margin:0 0 10px 0; color:var(--muted)}
-
-    /* --------------------
-       Top Widgets (clock, battery)
-       -------------------- */
-    .widget-row{
-      position:fixed;
-      top:12px;
-      right:18px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      z-index:1400;
-    }
-    .widget{
-      background: var(--glass);
-      padding:8px 12px;
-      border-radius:12px;
-      backdrop-filter: blur(8px);
-      font-size:14px;
-      color:var(--soft-white);
-      box-shadow:0 8px 18px rgba(0,0,0,0.35);
-      min-width:70px;
-      text-align:center;
-    }
-
-    /* --------------------
-       Center logo (optional)
-       -------------------- */
-    #logo{
-      display:none; /* toggle via settings */
-      position:fixed;
-      left:50%;
-      top:40%;
-      transform:translate(-50%,-50%);
-      width:420px;
-      opacity:0.95;
-      z-index:900;
-      pointer-events:none;
-    }
-
-    /* --------------------
-       Bottom Navbar
-       -------------------- */
-    .navbar{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      display:flex;
-      gap:10px;
-      background: rgba(0,0,0,0.45);
-      padding:8px 18px;
-      border-radius:40px;
-      align-items:center;
-      justify-content:center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      backdrop-filter: blur(10px);
-      z-index:1300;
-      border: 1px solid rgba(255,255,255,0.04);
-      transition: transform .18s ease;
-    }
-    .navbar img{
-      width:34px;
-      height:34px;
-      border-radius:10px;
-      cursor:pointer;
-      transition: transform .18s ease, opacity .12s ease;
-    }
-    .navbar img:hover{ transform:translateY(-6px) scale(1.04); opacity:0.95; }
-
-    /* --------------------
-       Reusable popup style
-       -------------------- */
-    .popup{
-      display:none;
-      position:fixed;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      width:86vw;
-      max-width:1000px;
-      height:76vh;
-      background: linear-gradient(180deg, rgba(8,8,8,0.75), rgba(8,8,8,0.65));
-      border-radius: var(--radius);
-      border:1px solid rgba(255,255,255,0.06);
-      backdrop-filter: blur(8px);
-      box-shadow:0 20px 60px rgba(0,0,0,0.6);
       overflow:hidden;
-      z-index:1200;
-      animation: popIn .28s cubic-bezier(.2,.9,.2,1);
     }
 
-    .popup .top{
-      padding:12px 18px;
+    /* -------------------
+       Layout
+       ------------------- */
+    .desktop {
+      height:100vh;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      justify-content:space-between;
+      position:relative;
+    }
+
+    /* wallpaper overlay (image set by JS) */
+    .wallpaper {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-position: center;
+      background-size: cover;
+      filter: contrast(1.02) saturate(1.05) brightness(0.7);
+      transition: opacity 300ms ease, transform 400ms ease;
+    }
+    .wallpaper.dim { opacity:0.5 }
+
+    /* main content area */
+    .content {
+      z-index: 2;
+      padding: 28px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      height:calc(100vh - 72px);
+    }
+
+    /* top bar: small status */
+    .topbar {
       display:flex;
       align-items:center;
       justify-content:space-between;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-bottom:1px solid rgba(255,255,255,0.02);
-    }
-    .popup .content{
-      padding:16px;
-      height: calc(76vh - 60px);
-      overflow:auto;
-    }
-    .close-btn{
-      background:transparent;
-      border:none;
-      color:var(--muted);
-      font-size:18px;
-      cursor:pointer;
-      padding:6px 8px;
-      border-radius:8px;
-    }
-    .close-btn:hover{ color:white; background:rgba(255,255,255,0.03) }
-
-    @keyframes popIn {
-      from{ opacity:0; transform: translate(-50%,-48%) scale(.98) }
-      to{ opacity:1; transform: translate(-50%,-50%) scale(1) }
-    }
-
-    /* --------------------
-       Buttons & app icons
-       -------------------- */
-    .icon-grid{
-      display:flex;
       gap:12px;
-      flex-wrap:wrap;
-      justify-content:flex-start;
-      align-items:center;
-      padding:6px 0;
+      pointer-events:auto;
     }
-    .app-btn{
-      width:120px;
-      height:120px;
-      border-radius:999px;
+    .top-left { display:flex; gap:12px; align-items:center; }
+    .brand {
+      display:flex;
+      gap:10px;
+      align-items:center;
+      font-weight:700;
+      letter-spacing:0.6px;
+    }
+    .brand .logo {
+      width:36px;height:36px;border-radius:9px;
+      background:linear-gradient(135deg,var(--accent),#2dd4bf);
+      display:flex;align-items:center;justify-content:center;font-weight:800;
+      color:#fff;font-size:18px;box-shadow:0 6px 22px rgba(0,0,0,0.6);
+    }
+    .top-right { display:flex; gap:12px; align-items:center; color:var(--muted); font-size:13px; }
+
+    /* center area */
+    .center {
+      flex:1;
       display:flex;
       align-items:center;
       justify-content:center;
+    }
+    .launcher {
+      width:980px;
+      max-width:calc(100% - 48px);
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.03);
-      cursor:pointer;
-      transition:transform .16s ease;
+      border-radius:14px;
+      padding:28px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.65);
+      display:flex;
+      gap:18px;
+      align-items:center;
+      backdrop-filter:none; /* keep performance */
     }
-    .app-btn img{ width:64px; height:64px; border-radius:14px }
-    .app-btn:hover{ transform:translateY(-6px) scale(1.03); }
 
-    /* Bookmarklet style uses same app-btn */
-    .btn-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:12px }
+    /* left column: welcome + wallpaper selector */
+    .left-col {
+      width:320px;
+      min-width:220px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .welcome { font-size:22px; font-weight:700; letter-spacing: .3px; }
+    .sub { color:var(--muted); font-size:13px; margin-top:2px; }
 
-    /* iframe style used in popups */
-    .popup iframe{
+    .wall-switch {
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .wall-thumb {
+      width:72px;height:48px;border-radius:8px;cursor:pointer;
+      background-size:cover;background-position:center;border:2px solid transparent;
+      box-shadow:0 3px 12px rgba(0,0,0,0.5);
+    }
+    .wall-thumb.active { outline: 2px solid rgba(255,255,255,0.08); transform:scale(1.02) }
+
+    /* center column: search & quick buttons */
+    .mid-col {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      align-items:center;
+    }
+    .search-wrap {
       width:100%;
-      height:100%;
-      border:none;
-      border-radius:0;
-      display:block;
+      max-width:520px;
+    }
+    .search {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:var(--glass);
+      border-radius:999px;
+      padding:12px 14px;
+      border:1px solid rgba(255,255,255,0.04);
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,0.2);
+    }
+    .search input{
+      background:transparent;border:0;outline:0;color:#fff;font-size:16px;width:100%;
+    }
+    .search .btn {
+      border-radius:999px;padding:8px 12px;border:0;cursor:pointer;
+      background:linear-gradient(180deg,var(--accent), #5b2fff); color:white;font-weight:600;
+      box-shadow:0 6px 18px rgba(123,60,255,0.16);
+    }
+    .controls {
+      display:flex; gap:10px; align-items:center; margin-top:8px;
+    }
+    .icon-btn {
+      background:var(--card); border-radius:10px; padding:8px; min-width:44px; min-height:44px; display:inline-flex;
+      align-items:center; justify-content:center;border:1px solid rgba(255,255,255,0.03);cursor:pointer;
+    }
+    .icon-btn:hover{ transform:translateY(-3px); transition:transform 140ms ease }
+
+    /* right column: apps grid */
+    .right-col {
+      width:320px; min-width:220px; display:flex; flex-direction:column; gap:10px;
+    }
+    .apps-grid {
+      display:grid;
+      grid-template-columns: repeat(3,1fr);
+      gap:8px;
+    }
+    .app {
+      background:var(--card);
+      border-radius:12px;
+      padding:8px;
+      text-align:center;
+      font-size:12px;
+      color:#fff;
+      min-height:64px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.02);
     }
 
-    /* small helpers */
-    .muted{ color:var(--muted); font-size:14px; margin-top:6px }
-    .center{ text-align:center }
+    /* bottom area: iframe / content viewer */
+    .viewer {
+      z-index:2;
+      height:290px;
+      margin:0 32px 24px 32px;
+      border-radius:12px;
+      overflow:hidden;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+    }
+    .viewer iframe { width:100%; height:100%; border:0; display:block; }
+
+    /* taskbar */
+    .taskbar {
+      height:56px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.4));
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 18px;
+      z-index:3;
+      border-top: 1px solid rgba(255,255,255,0.02);
+    }
+    .taskbar .left, .taskbar .center, .taskbar .right { display:flex; align-items:center; gap:12px; }
+    .taskbar .center { margin-left:auto; margin-right:auto; }
+    .chip { font-size:13px; color:var(--muted); background:transparent; padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03) }
+
+    /* small utilities */
+    .muted { color:var(--muted); font-size:13px }
+    .small { font-size:12px; color:var(--muted) }
 
     /* responsive */
-    @media (max-width:720px){
-      .popup{ width:94vw; height:86vh }
-      .app-btn{ width:86px; height:86px }
-      .app-btn img{ width:48px; height:48px }
-      .navbar{ gap:8px; padding:8px }
+    @media (max-width:1000px){
+      .launcher{flex-direction:column;align-items:stretch;height:auto}
+      .left-col,.right-col{width:100%}
+      .viewer{height:220px;margin:14px}
     }
-
-    /* visuals for inside hiddenDiv (fps and back button) */
-    .hidden-top-left{
-      position: absolute;
-      left:14px;
-      top:12px;
-      color:var(--soft-white);
-      font-weight:600;
-      font-size:14px;
-    }
-    .hidden-back{
-      position:absolute;
-      left:12px;
-      top:10px;
-      background:transparent;
-      border:none;
-      color:white;
-      font-size:20px;
-      cursor:pointer;
-    }
-
-    /* small styling for select */
-    .control-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
-    select{ padding:8px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background:transparent; color:white }
-    a.round-btn{ text-decoration:none; padding:8px 12px; background:white; color:black; border-radius:10px; font-weight:600 }
   </style>
 </head>
 <body>
+  <div class="desktop" role="application" aria-label="T9 OS launcher">
+    <div class="wallpaper" id="wallpaper"></div>
 
-  <!-- Top widgets -->
-  <div class="widget-row" role="region" aria-label="status widgets">
-    <div class="widget" id="batteryPercentage">Battery: --%</div>
-    <div class="widget" id="time">--:--</div>
-  </div>
+    <div class="content">
+      <div class="topbar" aria-hidden="false">
+        <div class="top-left">
+          <div class="brand">
+            <div class="logo">T9</div>
+            <div>
+              <div style="font-weight:600">T9 OS</div>
+              <div class="small">Play • Launch • Share</div>
+            </div>
+          </div>
+        </div>
 
-  <!-- Optional big logo (toggled via settings) -->
-  <img id="logo" src="logo-new.png" alt="T9 OS Logo">
-
-  <!-- Main page body title (kept minimal since original had many UI elements) -->
-  <div style="text-align:center; padding-top:40px;">
-    <h1>T9 OS</h1>
-    <p class="muted">A lightweight web OS experience — redesigned</p>
-  </div>
-
-  <!-- NAVBAR -->
-  <nav class="navbar" role="navigation" aria-label="main navigation">
-    <img src="gameicon.png" alt="Games" title="Games" id="toggleDivButton">
-    <img src="search.png" alt="Search" title="Search" id="searchBtn">
-    <img src="apps1.png" alt="Emulator" title="Emulator" id="emulatorBtn">
-    <img src="chat2.png" alt="Chat" title="Chat" id="chatBtn">
-  </nav>
-
-  <!-- ======================
-       POPUPS (all use .popup)
-       ====================== -->
-
-  <!-- Hidden / Games container (maps to your original hiddenDiv) -->
-  <div id="hiddenDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Games window">
-    <div class="top">
-      <div class="hidden-top-left">
-        <button class="hidden-back" onclick="setFrameSrc('test99.html')">←</button>
-        <strong style="margin-left:8px">Games</strong>
-      </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <div id="fpsCounter" style="font-size:14px; color:var(--muted)"></div>
-        <div>
-          <button class="close-btn" onclick="closePopup('hiddenDiv')">●</button>
-          <button class="close-btn" onclick="fullscreenIframe('frame2')">⬜</button>
+        <div class="top-right">
+          <div id="time" class="small">--:--</div>
+          <div id="battery" class="small">—%</div>
         </div>
       </div>
-    </div>
-    <div class="content" style="padding:0">
-      <iframe id="frame2" src="test99.html" title="Game frame"></iframe>
-    </div>
-  </div>
 
-  <!-- Apps -->
-  <div id="appsDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Apps">
-    <div class="top">
-      <strong>Apps</strong>
-      <div>
-        <button class="close-btn" onclick="closePopup('appsDiv')">●</button>
-      </div>
-    </div>
-    <div class="content">
-      <p class="muted center">Warning: if an embedded site shows "page not found" — refresh the iframe or the page.</p>
-      <div class="icon-grid" id="appsGrid">
-        <!-- keep same app links -->
-        <a class="app-btn" href="https://t9os.com/active/iframe#https://netflix.com" title="Netflix" target="_blank" rel="noopener">
-          <img src="netflix.png" alt="Netflix">
-        </a>
-        <a class="app-btn" href="https://t9os.com/active/iframe#https://discord.com" title="Discord" target="_blank" rel="noopener">
-          <img src="dc.png" alt="Discord">
-        </a>
-        <a class="app-btn" href="https://t9os.com/active/iframe#https://www.xbox.com/en-US/play/games/fortnite/BT5P2X999VH2" title="Fortnite" target="_blank" rel="noopener">
-          <img src="fortnite.png" alt="Fortnite">
-        </a>
-        <a class="app-btn" href="https://t9os.com/active/iframe#https://www.tiktok.com/" title="TikTok" target="_blank" rel="noopener">
-          <img src="tiktok.png" alt="Tiktok">
-        </a>
-      </div>
-    </div>
-  </div>
+      <div class="center">
+        <div class="launcher" role="region" aria-label="Launcher">
+          <!-- LEFT -->
+          <div class="left-col" aria-hidden="false">
+            <div class="welcome">Welcome back</div>
+            <div class="sub">Your curated games & apps — optimized and lightweight.</div>
 
-  <!-- Collab -->
-  <div id="collabDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Partners">
-    <div class="top">
-      <strong>Partners</strong>
-      <div><button class="close-btn" onclick="closePopup('collabDiv')">●</button></div>
-    </div>
-    <div class="content">
-      <p class="muted center">They are partners, not sponsors</p>
-      <div class="icon-grid">
-        <a class="app-btn" href="https://sites.google.com/view/wtex/home?authuser=0" target="_blank" rel="noopener"><img src="rat.gif" alt="WTEX"></a>
-        <a class="app-btn" href="https://blackoutgames.pages.dev/" target="_blank" rel="noopener"><img src="zenith.png" alt="Blackout Games"></a>
-        <a class="app-btn" href="https://1anime.app" target="_blank" rel="noopener"><img src="anime-partner.png" alt="1anime"></a>
-      </div>
-    </div>
-  </div>
+            <div style="margin-top:10px;">
+              <div class="small">Wallpaper</div>
+              <div class="wall-switch" id="wallSwitch" aria-label="Wallpaper selector">
+                <!-- thumbs inserted by JS -->
+              </div>
+            </div>
 
-  <!-- Updates -->
-  <div id="updateDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Updates">
-    <div class="top">
-      <strong>Updates</strong>
-      <div><button class="close-btn" onclick="closePopup('updateDiv')">●</button></div>
-    </div>
-    <div class="content center">
-      <h2>Version 2 (Beta)</h2>
-      <p class="muted">New update: 6 new games have been added</p>
-      <p class="muted">This is a beta so it might have some glitches</p>
-      <p class="muted">If you'd like to help out T9 OS please support on Patreon</p>
-      <div style="margin-top:12px; display:flex; gap:12px; justify-content:center">
-        <a class="round-btn" href="https://www.patreon.com/c/T9OS" target="_blank" rel="noopener">Support us!</a>
-        <a class="round-btn" href="https://discord.com/invite/tknXENDkzY" style="background:#7289da; color:white" target="_blank" rel="noopener">Join server!</a>
-      </div>
-    </div>
-  </div>
+            <div style="margin-top:10px;">
+              <button class="icon-btn" id="open-settings" title="Settings">⚙️</button>
+              <button class="icon-btn" id="toggle-logo" title="Toggle logo">🖼️</button>
+            </div>
+          </div>
 
-  <!-- Widget small (people online) -->
-  <div id="widgetDiv" class="popup" style="width:240px; height:170px; right:40px; top:80px; left:auto; transform:none; display:none">
-    <div class="top" style="padding:10px 12px"><strong>Online</strong><div><button class="close-btn" onclick="closePopup('widgetDiv')">●</button></div></div>
-    <div class="content center" style="padding-top:16px">
-      <h3>People Online</h3>
-      <h2 id="count">0</h2>
-    </div>
-  </div>
+          <!-- MIDDLE -->
+          <div class="mid-col">
+            <div class="search-wrap" aria-label="Search area">
+              <div class="search" role="search">
+                <input id="searchInput" placeholder="Search or paste a url — T9 OS" aria-label="Search or URL" />
+                <button class="btn" id="goBtn">Open</button>
+              </div>
 
-  <!-- Chat -->
-  <div id="ChatDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Chat">
-    <div class="top">
-      <strong>Chat</strong>
-      <div><button class="close-btn" onclick="closePopup('ChatDiv')">●</button></div>
-    </div>
-    <div class="content" style="padding:0">
-      <iframe src="chat.html" title="Chat" style="width:100%; height:100%; border:none"></iframe>
-    </div>
-  </div>
+              <div class="controls" aria-hidden="false">
+                <div class="icon-btn" id="open-new-tab" title="Open new T9 tab">➕</div>
+                <div class="icon-btn" id="open-games" title="Open games hub">🎮</div>
+                <div class="icon-btn" id="open-browser" title="Open browser view">🌐</div>
+                <div class="chip" id="statusChip">Ready</div>
+              </div>
+            </div>
 
-  <!-- Hacks / Bookmarklets -->
-  <div id="hacksDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Hacks">
-    <div class="top">
-      <strong>Bookmarklets</strong>
-      <div><button class="close-btn" onclick="closePopup('hacksDiv')">●</button></div>
-    </div>
-    <div class="content">
-      <p class="muted center">Drag the buttons to your bookmarks bar. For Blooket hacks: open page and follow instructions.</p>
+            <div style="width:100%; max-width:640px; display:flex; justify-content:center; gap:12px;">
+              <a class="icon-btn" id="open-discord" title="Discord">💬</a>
+              <a class="icon-btn" id="open-patreon" title="Support">❤️</a>
+              <a class="icon-btn" id="open-youtube" title="YouTube">▶️</a>
+            </div>
+          </div>
 
-      <div class="btn-row">
-        <!-- AutoClicker bookmarklet (kept as original) -->
-        <a title="AutoClicker" class="app-btn" href="javascript:(function(x,y){if(!window.click){window.click=!0,document.body.style.cursor='crosshair';var cps=prompt('Autoclicker CPS: (Under 200 recommended)');if(!cps||isNaN(cps)?(alert('You entered something wrong. Try running the script again.'),end()):alert('Autoclicker activated at '+cps+' CPS! Do [ctrl+e] to stop.'),addEventListener('mousemove',e=>{x=e.clientX,y=e.clientY}),addEventListener('keydown',e=>{'e'===e.key&&e.ctrlKey&&(alert('Autoclicker deactivated! Click the bookmark again to reactivate!'),end())}),window.click)var int=setInterval(function(){var e=document.elementFromPoint(x,y);e&&e.click()},1e3/cps);function end(){clearInterval(int),window.click=!1,document.body.style.cursor='default'}}})();">
-          <img src="autoclicker.png" alt="AutoClicker" style="width:48px;height:48px">
-        </a>
+          <!-- RIGHT -->
+          <div class="right-col">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-weight:600">Apps</div>
+              <div class="small">Quick launch</div>
+            </div>
 
-        <!-- Edit Anything -->
-        <a class="app-btn" title="Edit Anything" href="javascript:if(document.body.contentEditable !== 'true') { document.body.contentEditable = 'true'; document.designMode='on'; void 0} else { document.body.contentEditable = 'false'; document.designMode='off'; void 0 }">
-          <img src="edit.png" alt="Edit">
-        </a>
-
-        <!-- Blooket Hacks page -->
-        <a class="app-btn" href="blk.html" title="Blooket Hacks">
-          <img src="blooket.png" alt="Blooket">
-        </a>
+            <div class="apps-grid" id="appsGrid" aria-label="Apps">
+              <!-- apps inserted by JS -->
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- audio script for buttons (kept) -->
-      <script>
-        // audio play for app-btn elements that have data-sound (left in place)
-        document.addEventListener('click', function(e){
-          const el = e.target.closest('.app-btn');
-          if(!el) return;
-          const soundFile = el.getAttribute('data-sound');
-          if(soundFile){ const audio = new Audio(soundFile); audio.play().catch(()=>{}); }
-        });
-      </script>
+      <!-- viewer iframe -->
+      <div class="viewer" aria-live="polite">
+        <iframe id="viewerFrame" src="about:blank" title="Content viewer"></iframe>
+      </div>
     </div>
-  </div>
 
-  <!-- Emulator -->
-  <div id="emulatorDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Emulator / Apps">
-    <div class="top">
-      <strong>| Apps |</strong>
-      <div><button class="close-btn" onclick="closePopup('emulatorDiv')">×</button></div>
-    </div>
-    <div class="content">
-      <div class="icon-grid center">
-        <a class="app-btn" href="/windows11.html"><img src="windows11.png" alt="Windows 11"></a>
-        <a class="app-btn" href="/emulatorjs.html"><img src="emulatorjs.png" alt="EmulatorJS"></a>
-        <a class="app-btn" href="/webretro.html"><img src="emulator.png" alt="WebRetro"></a>
+    <!-- taskbar -->
+    <div class="taskbar" role="toolbar" aria-label="Taskbar">
+      <div class="left">
+        <div class="icon-btn" id="task-home" title="Home">🏠</div>
+        <div class="icon-btn" id="task-apps" title="Apps">📂</div>
+      </div>
+
+      <div class="center">
+        <div class="chip" id="openTabsCount">Tabs: 0</div>
+      </div>
+
+      <div class="right">
+        <div class="small" id="userInfo">T9 OS • optimized</div>
       </div>
     </div>
   </div>
-
-  <!-- Search (iframe) -->
-  <div id="searchDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Search">
-    <div class="top">
-      <strong>Search</strong>
-      <div><button class="close-btn" onclick="closePopup('searchDiv')">●</button></div>
-    </div>
-    <div class="content" style="padding:0">
-      <iframe src="/active/index.html" title="Search Content" style="width:100%; height:100%; border:none"></iframe>
-    </div>
-  </div>
-
-  <!-- Leaderboard -->
-  <div id="leaderboardDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Leaderboard">
-    <div class="top">
-      <strong>Leaderboard</strong>
-      <div><button class="close-btn" onclick="closePopup('leaderboardDiv')">●</button></div>
-    </div>
-    <div class="content">
-      <section style="background:black; padding:12px; border-radius:10px">
-        <h2>Welcome to T9 OS - Leaderboard</h2>
-        <p class="muted">This is where you upload your high scores in games</p>
-        <p class="post muted">Posted by: T9 OS</p>
-      </section>
-    </div>
-  </div>
-
-  <!-- Settings (background selection + logo toggle) -->
-  <div id="settingsDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Settings">
-    <div class="top">
-      <strong>Settings</strong>
-      <div><button class="close-btn" onclick="closePopup('settingsDiv')">●</button></div>
-    </div>
-    <div class="content">
-      <h3>Appearance</h3>
-      <div class="control-row">
-        <label for="background-select" style="color:var(--muted)">Select Background:</label>
-        <select id="background-select" aria-label="background select">
-          <option value="abstract.png">Default</option>
-          <option value="purplecity2.png">T9 OS city</option>
-          <option value="toyota.jpg">Toyota GR Supra</option>
-          <option value="car.jpeg">Hennessey Venom F5</option>
-          <option value="goku.jpg">Goku</option>
-          <option value="ocean.png">Moonlit Voyage</option>
-          <option value="vibes.gif">Synthwave sunset</option>
-          <option value="deadpool.gif">Deadpool</option>
-          <option value="city.jpg">City</option>
-          <option value="sunset.jpg">Sunset</option>
-          <option value="mountains.jpg">Mountains</option>
-          <option value="tree.jpg">Tropical trees</option>
-          <option value="space.jpg">Space</option>
-          <option value="psky.jpg">Purple sky</option>
-          <option value="abstract.jpg">Abstract</option>
-          <option value="cyberpunk.gif">Cyberpunk</option>
-          <option value="luffy.gif">Luffy</option>
-          <option value="tmoon.gif">Samurai Moon</option>
-          <option value="pbWaves.jpg">Purple Blue Abstract</option>
-        </select>
-
-        <a class="round-btn" id="openGameBtn" href="javascript:void(0)">Hide url</a>
-        <a class="round-btn" id="toggleBTN" href="javascript:void(0)">Toggle logo</a>
-      </div>
-
-      <div style="margin-top:12px">
-        <p class="muted">Tip: background preference stored in localStorage.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin (kept for parity) -->
-  <div id="adminDiv" class="popup" aria-hidden="true" role="dialog" aria-label="Admin">
-    <div class="top"><strong>Admin</strong><div><button class="close-btn" onclick="closePopup('adminDiv')">●</button></div></div>
-    <div class="content">Admin content here</div>
-  </div>
-
-  <!-- A simple hidden div for showing remote image from Firebase (imgBox) -->
-  <div id="imgBox" style="position:fixed; left:12px; bottom:120px; z-index:1100"></div>
-
-  <!-- =============
-       Scripts (moved to bottom)
-       ============= -->
 
   <script>
-    /* ------------------------------
-       Utility: open/close popups
-       ------------------------------ */
-    function openPopup(id){
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.style.display = 'block';
-      el.setAttribute('aria-hidden','false');
-    }
-    function closePopup(id){
-      const el = document.getElementById(id);
-      if(!el) return;
-      el.style.display = 'none';
-      el.setAttribute('aria-hidden','true');
+    /***********************
+     * Config / Presets
+     ***********************/
+    const WALLPAPERS = [
+      {id:'default', label:'Aurora', url:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=1c3d471c3a1b8a7f3f3f7d3d9cb21917'},
+      {id:'city', label:'City', url:'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1400&auto=format&fit=crop'},
+      {id:'synth', label:'Synthwave', url:'https://images.unsplash.com/photo-1505483531331-3a9b2e0b3d09?q=80&w=1400&auto=format&fit=crop'},
+      {id:'space', label:'Space', url:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1400&auto=format&fit=crop'}
+    ];
+
+    const APPS = [
+      {name:'Netflix', url:'https://t9os.com/active/iframe#https://netflix.com'},
+      {name:'Discord', url:'https://t9os.com/active/iframe#https://discord.com'},
+      {name:'Fortnite', url:'https://t9os.com/active/iframe#https://www.xbox.com/en-US/play/games/fortnite/BT5P2X999VH2'},
+      {name:'TikTok', url:'https://t9os.com/active/iframe#https://www.tiktok.com'},
+      {name:'YouTube', url:'https://t9os.com/active/iframe#https://www.youtube.com'},
+      {name:'Windows', url:'/windows11.html'}
+    ];
+
+    /***********************
+     * Helpers & DOM nodes
+     ***********************/
+    const wallpaperEl = document.getElementById('wallpaper');
+    const wallSwitch = document.getElementById('wallSwitch');
+    const appsGrid = document.getElementById('appsGrid');
+    const viewerFrame = document.getElementById('viewerFrame');
+    const searchInput = document.getElementById('searchInput');
+    const goBtn = document.getElementById('goBtn');
+    const statusChip = document.getElementById('statusChip');
+    const openNewTabBtn = document.getElementById('open-new-tab');
+    const openGamesBtn = document.getElementById('open-games');
+    const openBrowserBtn = document.getElementById('open-browser');
+    let openTabs = [];
+
+    /***********************
+     * Init wallpaper selector
+     ***********************/
+    function renderWallpaperThumbs(){
+      wallSwitch.innerHTML = '';
+      WALLPAPERS.forEach(w => {
+        const el = document.createElement('div');
+        el.className = 'wall-thumb';
+        el.style.backgroundImage = `url("${w.url}")`;
+        el.title = w.label;
+        el.dataset.id = w.id;
+        el.addEventListener('click', () => setWallpaper(w.id));
+        wallSwitch.appendChild(el);
+      });
+      // mark active
+      updateActiveWallThumb();
     }
 
-    /* Wire navbar buttons to popups */
-    document.getElementById('toggleDivButton').addEventListener('click', ()=> {
-      const el = document.getElementById('hiddenDiv');
-      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    });
-    document.getElementById('searchBtn').addEventListener('click', ()=> {
-      const el = document.getElementById('searchDiv');
-      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    });
-    document.getElementById('emulatorBtn').addEventListener('click', ()=> {
-      const el = document.getElementById('emulatorDiv');
-      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    });
-    document.getElementById('chatBtn').addEventListener('click', ()=> {
-      const el = document.getElementById('ChatDiv');
-      el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    });
-
-    /* small helpers */
-    function setFrameSrc(url){
-      const frame = document.getElementById('frame2');
-      if(frame) frame.src = url;
-    }
-    function fullscreenIframe(frameId){
-      const iframe = document.getElementById(frameId);
-      if(!iframe) return;
-      if(iframe.requestFullscreen) iframe.requestFullscreen();
-      else if(iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-      else if(iframe.mozRequestFullScreen) iframe.mozRequestFullScreen();
-      else if(iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+    function setWallpaper(id){
+      const w = WALLPAPERS.find(x=>x.id===id) || WALLPAPERS[0];
+      localStorage.setItem('t9_wall', w.id);
+      wallpaperEl.style.backgroundImage = `url('${w.url}')`;
+      updateActiveWallThumb();
     }
 
-    /* ------------------------------
-       Clock & Battery
-       ------------------------------ */
-    function updateClock(){
-      const now = new Date();
-      const options = { hour:'numeric', minute:'numeric', hour12: true };
-      document.getElementById('time').textContent = now.toLocaleTimeString('en-US', options);
+    function updateActiveWallThumb(){
+      const active = localStorage.getItem('t9_wall') || WALLPAPERS[0].id;
+      document.querySelectorAll('.wall-thumb').forEach(t => {
+        t.classList.toggle('active', t.dataset.id === active);
+      });
     }
-    updateClock();
-    setInterval(updateClock, 1000);
 
-    // Battery API
-    const batteryEl = document.getElementById('batteryPercentage');
-    if('getBattery' in navigator){
+    /***********************
+     * Apps grid
+     ***********************/
+    function renderApps(){
+      appsGrid.innerHTML = '';
+      APPS.forEach(a=>{
+        const el = document.createElement('div');
+        el.className = 'app';
+        el.innerHTML = `<div style="font-size:20px; margin-bottom:6px">🔗</div><div style="font-weight:600">${a.name}</div>`;
+        el.title = `Open ${a.name}`;
+        el.addEventListener('click', ()=>openInViewer(a.url));
+        appsGrid.appendChild(el);
+      });
+    }
+
+    /***********************
+     * Viewer behavior
+     ***********************/
+    function openInViewer(url){
+      statusChip.textContent = 'Loading...';
+      // if url looks like a search, convert
+      let final = url;
+      if(!/^https?:\/\//i.test(url) && !url.startsWith('about:')){
+        // support t9os hash format for allowed iframes
+        if(url.includes('#')) final = url;
+        else final = 'https://t9os.com/active/iframe#https://'+encodeURI(url);
+      }
+      viewerFrame.src = final;
+      viewerFrame.onload = ()=> statusChip.textContent = 'Ready';
+      // track "tabs"
+      trackTab(final);
+    }
+
+    function trackTab(url){
+      openTabs.push(url);
+      document.getElementById('openTabsCount').textContent = `Tabs: ${openTabs.length}`;
+    }
+
+    /***********************
+     * Search / URL logic
+     ***********************/
+    function handleSearch(q){
+      q = (q||'').trim();
+      if(!q) return;
+      // if it's explicitly a URL
+      const looksLikeUrl = /^https?:\/\//i.test(q) || q.includes('.') && !q.includes(' ');
+      if(looksLikeUrl){
+        // if user sent a raw URL without protocol, try adding https
+        const final = /^https?:\/\//i.test(q) ? q : 'https://' + q;
+        openInViewer(final);
+      } else {
+        // search query -> use t9os wrapper to keep inside iframe (or fallback to google)
+        const searchUrl = 'https://t9os.com/active/iframe#https://www.google.com/search?q=' + encodeURIComponent(q);
+        openInViewer(searchUrl);
+      }
+    }
+
+    /***********************
+     * Small utilities
+     ***********************/
+    function openNewT9Tab(){
+      // open new window with a viewer iframe opened to the same site (simple)
+      const w = window.open('', '_blank');
+      if(!w) {
+        alert('Pop-up blocked. Allow pop-ups to open a new tab.');
+        return;
+      }
+      const html = `
+        <!doctype html><html><head><title>T9 Tab</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <style>body{margin:0;background:#000;color:#fff;}</style></head>
+        <body><iframe src="${viewerFrame.src || 'about:blank'}" style="width:100vw;height:100vh;border:0"></iframe></body></html>`;
+      w.document.write(html);
+      w.document.close();
+      // track
+      openTabs.push('new-tab');
+      document.getElementById('openTabsCount').textContent = `Tabs: ${openTabs.length}`;
+    }
+
+    /***********************
+     * Time & battery
+     ***********************/
+    function updateTime(){
+      const t = new Date();
+      const hh = t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      document.getElementById('time').textContent = hh;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // Battery (graceful if not supported)
+    const batteryEl = document.getElementById('battery');
+    if(navigator.getBattery) {
       navigator.getBattery().then(b => {
-        function setBattery(bat){
-          batteryEl.textContent = 'Battery: ' + Math.round(bat.level * 100) + '%';
+        function setB(){
+          batteryEl.textContent = Math.round(b.level * 100) + '%';
         }
-        setBattery(b);
-        b.addEventListener('levelchange', ()=> setBattery(b));
-      }).catch(()=> batteryEl.textContent = 'Battery: n/a');
-    } else {
-      batteryEl.textContent = 'Battery API not supported';
-    }
+        setB();
+        b.addEventListener('levelchange', setB);
+      }).catch(()=>batteryEl.textContent='—%');
+    } else batteryEl.textContent = '—%';
 
-    /* ------------------------------
-       FPS tracker for hiddenDiv iframe
-       ------------------------------ */
-    (function trackFPS(){
-      let lastTime = performance.now(), frameCount = 0;
-      function step(){
-        frameCount++;
-        const now = performance.now();
-        const delta = now - lastTime;
-        if(delta >= 1000){
-          const fps = Math.round((frameCount * 1000)/delta);
-          const el = document.getElementById('fpsCounter');
-          if(el) el.textContent = 'FPS: ' + fps;
-          frameCount = 0;
-          lastTime = now;
-        }
-        requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    })();
+    /***********************
+     * Event wiring
+     ***********************/
+    document.addEventListener('DOMContentLoaded', ()=> {
+      renderWallpaperThumbs();
+      renderApps();
 
-    /* ------------------------------
-       Background select (persist)
-       ------------------------------ */
-    const bgSelect = document.getElementById('background-select');
-    function applyBackground(src){
-      if(!src) return;
-      document.body.style.background = `url("${src}") center/cover no-repeat, linear-gradient(180deg,var(--bg-top),var(--bg-bottom))`;
-    }
-    // load saved
-    const savedBg = localStorage.getItem('selectedBackground');
-    if(savedBg && bgSelect){
-      bgSelect.value = savedBg;
-      applyBackground(savedBg);
-    }
-    if(bgSelect){
-      bgSelect.addEventListener('change', function(){
-        const v = this.value;
-        localStorage.setItem('selectedBackground', v);
-        applyBackground(v);
-      });
-    }
+      // restore wallpaper
+      const saved = localStorage.getItem('t9_wall') || WALLPAPERS[0].id;
+      setWallpaper(saved);
 
-    /* Toggle logo */
-    document.getElementById('toggleBTN').addEventListener('click', function(){
-      const img = document.getElementById('logo');
-      img.style.display = (img.style.display === 'block') ? 'none' : 'block';
-    });
-
-    /* openGame behavior (keeps to original function: opens index.html in new window with iframe) */
-    document.getElementById('openGameBtn').addEventListener('click', function(){
-      const win = window.open('', '_blank');
-      if(!win) return alert('Popup blocked — allow popups for this site');
-      const url = 'index.html';
-      win.document.body.style.margin = '0';
-      const iframe = win.document.createElement('iframe');
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.style.border = 'none';
-      iframe.src = url;
-      win.document.body.appendChild(iframe);
-    });
-
-    /* small: open widgetDiv (people count) by clicking badge (optional) */
-    // (the widget is shown programmatically when count updates below)
-
-    /* ------------------------------
-       Firebase realtime connections (People online) - module import
-       ------------------------------ */
-  </script>
-
-  <!-- Firebase module (used twice in original - we'll keep necessary imports once) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, onDisconnect, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDB4VU2JNQGO5pMgXGaasIiY6kFxgsb-84",
-      authDomain: "chat-99dfe.firebaseapp.com",
-      databaseURL: "https://chat-99dfe-default-rtdb.firebaseio.com",
-      projectId: "chat-99dfe",
-      storageBucket: "chat-99dfe.firebasestorage.app",
-      messagingSenderId: "17277094525",
-      appId: "1:17277094525:web:989d19d04fdde769de7f14",
-      measurementId: "G-NEXJFPJPCP"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Connections: update people count
-    const connectionsRef = ref(db, "connections");
-    // create new unique connection
-    const myConnection = push(connectionsRef);
-    set(myConnection, true);
-    onDisconnect(myConnection).remove();
-
-    onValue(connectionsRef, (snapshot) => {
-      const count = snapshot.size ?? snapshot.numChildren();
-      document.getElementById("count").innerText = count;
-      // show small widget if it's hidden
-      const w = document.getElementById('widgetDiv');
-      if(w && count > 0) w.style.display = w.style.display === 'block' ? 'block' : 'block';
-    });
-
-    // Global image (imgBox)
-    const imageRef = ref(db, "globalImage");
-    onValue(imageRef, (snapshot)=>{
-      const data = snapshot.val();
-      const imgBox = document.getElementById('imgBox');
-      if(data && data.url){
-        imgBox.innerHTML = `<img src="${data.url}" style="max-width:220px;border-radius:10px; box-shadow:0 6px 16px rgba(0,0,0,0.5)">`;
-      } else imgBox.innerHTML = '';
-    });
-
-  </script>
-
-  <script>
-    /* small DOM-ready handlers (defensive checks) */
-    document.addEventListener('DOMContentLoaded', function(){
-      // ensure initial popup display states are hidden
-      ['hiddenDiv','appsDiv','collabDiv','updateDiv','widgetDiv','ChatDiv','hacksDiv','emulatorDiv','searchDiv','leaderboardDiv','settingsDiv','adminDiv'].forEach(id=>{
-        const el = document.getElementById(id);
-        if(el) { el.style.display = el.style.display === 'block' ? 'block' : 'none'; el.setAttribute('aria-hidden','true'); }
+      // search events
+      goBtn.addEventListener('click', ()=> handleSearch(searchInput.value));
+      searchInput.addEventListener('keydown', e=>{
+        if(e.key === 'Enter') handleSearch(searchInput.value);
       });
 
-      // toggle for frame navigation from hiddenDiv back button: already wired via setFrameSrc earlier
+      // quick buttons
+      openNewTabBtn.addEventListener('click', openNewT9Tab);
+      openGamesBtn.addEventListener('click', ()=> openInViewer('/t9os.html'));
+      openBrowserBtn.addEventListener('click', ()=> openInViewer('https://t9os.com/active/iframe#https://www.google.com'));
+
+      // quick external links
+      document.getElementById('open-discord').addEventListener('click', ()=> openInViewer('https://t9os.com/active/iframe#https://discord.gg/tknXENDkzY'));
+      document.getElementById('open-youtube').addEventListener('click', ()=> openInViewer('https://t9os.com/active/iframe#https://www.youtube.com'));
+      document.getElementById('open-patreon').addEventListener('click', ()=> openInViewer('https://www.patreon.com/c/T9OS'));
+
+      // settings / small features
+      document.getElementById('open-settings').addEventListener('click', ()=> {
+        // simple prompt for wallpaper (fast)
+        const choices = WALLPAPERS.map(w=>w.id).join(', ');
+        const pick = prompt('Choose wallpaper id: ' + choices, localStorage.getItem('t9_wall') || WALLPAPERS[0].id);
+        if(pick) setWallpaper(pick);
+      });
+
+      // toggle logo: simulate previous behavior by toggling .logo visibility
+      document.getElementById('toggle-logo').addEventListener('click', ()=>{
+        const l = document.querySelector('.logo');
+        l.style.display = (getComputedStyle(l).display === 'none') ? 'flex' : 'none';
+      });
+
+      // "apps" taskbar button opens apps grid by focusing first app
+      document.getElementById('task-apps').addEventListener('click', ()=> {
+        const firstApp = appsGrid.querySelector('.app');
+        if(firstApp) firstApp.scrollIntoView({behavior:'smooth', block:'center'});
+      });
+
+      // start with a default page so frame is not blank.
+      openInViewer('https://t9os.com/active/iframe#https://t9os.com');
     });
-  </script>
 
-  <!-- Keep remaining original inline scripts that are harmless (but consolidated) -->
-  <script>
-    // Example: a search-bar image filtering snippet from original, left in case there is an element
-    try {
-      const searchBar = document.getElementById('searchBar');
-      if(searchBar) {
-        searchBar.addEventListener('input', function () {
-          const searchTerm = this.value.toLowerCase();
-          const images = document.querySelectorAll('#imageContainer img');
-          images.forEach(image => {
-            const altText = image.getAttribute('alt') || '';
-            image.style.display = altText.toLowerCase().includes(searchTerm) ? 'inline-block' : 'none';
-          });
-        });
-      }
-    } catch(e){ /* ignore */ }
+    /***********************
+     * Accessibility & performance notes
+     ***********************/
+    // - Minimal use of backdrop-filter and no heavy animated gradients to keep CPU low.
+    // - If you want the old firebase "people online" counter, add your Firebase script and
+    //   push a lightweight connection entry (we purposely left it out to keep this page fast).
   </script>
-
-  <!-- Keep any bottom-of-page background persistence from original -->
-  <script>
-    if(!localStorage.getItem("bg")){
-      localStorage.setItem("bg", "url('abstract.png') no-repeat center center fixed");
-    }
-    // if user used old 'bg' key, apply it as fallback
-    try {
-      const oldBg = localStorage.getItem("bg");
-      if(oldBg && !localStorage.getItem('selectedBackground')) {
-        // apply old bg as inline background
-        document.body.style.background = oldBg;
-        document.body.style.backgroundSize = "cover";
-      }
-    } catch(e){}
-  </script>
-
 </body>
 </html>
