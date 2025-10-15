@@ -304,5 +304,134 @@ if (selectedBackground) {
 </script>
 
 
+<div class="tnav">
 
+   
+
+  <a href="https://discord.gg/tknXENDkzY">
+    <img class="timg" src="discord.png">
+  </a>  
+
+  <a onclick="settings()">
+    <img class="timg" src="https://t9os.pages.dev/settings22.png">
+  </a>
+
+  <a href='/'>
+    <img class="timg" src="home.png">
+  </a>
+
+  <a id="fullscreen-button">
+    <img class="timg" src="fullscreen.png">
+  </a>
+
+
+
+  <a onclick="collab()">
+    <img class="timg" src="collab.png">
+  </a>
+
+    
+    <a onclick="sound()">
+    <img class="timg" src="music.png">
+  </a>
+
+  
+    <a onclick="hacks()">
+    <img class="timg" src="hacks.png">
+  </a>
+
+ 
+
+  <h2 class="battery" id="batteryPercentage"></h2>
+  <div class="clock" id="time"></div>
+
+
+</div>
+
+<style>
+   .tnav {
+    top:0;
+    left:0;
+    height:25px;
+    width:100%;
+    opacity:50%;
+    background-color:black;
+    position:fixed;
+    
+  }
+  .timg{
+    width:17px;
+    transform: translateY(-3px);
+    gap:70px;
+  }
+  .timg:hover{
+    transform: translateY(-4x);
+
+
+  }
+</style>
+<script>
+  function updateTime() {
+  var date = new Date();
+  var options = { hour: 'numeric', minute: 'numeric',  hour12: true };
+  var formattedTime = date.toLocaleTimeString('en-US', options);
+  document.getElementById("time").innerHTML = formattedTime;
+  }
+  
+  setInterval(updateTime, 1000); 
+
+  // Battery Status
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(function(battery) {
+      updateBatteryStatus(battery);
+      battery.addEventListener('levelchange', function() {
+        updateBatteryStatus(battery);
+      });
+    });
+  } else {
+    document.getElementById('batteryPercentage').innerHTML = 'Battery API not supported.';
+  }
+
+  function updateBatteryStatus(battery) {
+    var percentage = Math.floor(battery.level * 100);
+    document.getElementById('batteryPercentage').innerHTML = percentage + '%';
+  }
+
+  // Toggle Div Visibility
+  const button = document.getElementById('toggleDivButton');
+  const hiddenDiv = document.getElementById('hiddenDiv');
+
+  button.addEventListener('click', () => {
+    if (hiddenDiv.style.display === 'none' || hiddenDiv.style.display === '') {
+      hiddenDiv.style.display = 'block';
+    } else {
+      hiddenDiv.style.display = 'none';
+    }
+  });
+</script>
+<script>
+  function updateTime() {
+    const date = new Date();
+    const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+    const formattedTime = date.toLocaleTimeString('en-US', options);
+
+    const hour = date.getHours();
+    let emoji = "⏰";
+
+    if (hour >= 5 && hour < 12) {
+      emoji = "🌅"; 
+    } else if (hour >= 12 && hour < 17) {
+      emoji = "🌞"; 
+    } else if (hour >= 17 && hour < 21) {
+      emoji = "🌇"; 
+    } else {
+      emoji = "🌙"; 
+    }
+
+    document.getElementById("wtime").innerHTML = `${formattedTime} ${emoji}`;
+  }
+
+  setInterval(updateTime, 1000);
+  updateTime(); 
+</script>
 
