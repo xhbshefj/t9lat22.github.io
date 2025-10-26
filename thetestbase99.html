@@ -621,19 +621,17 @@ border: 1px solid rgba(255, 255, 255, 0.15);
 
 
 
-      <h2 style="    transform: translateX(-50%); top:20px; position:fixed; left:50%; text-align:center; color:white; ">Quotes: <span id="quotes"></span></h2>
+      <h2 style="transform: translateX(-50%); top:20px; position:fixed; left:50%; text-align:center; color:white; ">CPU usage:<span id="cpu"></span></h2>
 
- <script>
-        const texts = [
-           "Let it grow",
-            "bruh",
-            "Gogaurdian is poopoo",
-            "67",
-            "41",
-            "T9 OS is the best"
-        ];
-        document.getElementById("quotes").textContent = texts[Math.floor(Math.random() * texts.length)];
-    </script>
+ 
+<script>
+  function updateStats() {
+    let cpuPercent = Math.floor(Math.random() * 100);
+    document.getElementById('cpu').textContent = cpuPercent + '%';
+  }
+
+  setInterval(updateStats, 1000);
+</script>
     
 
 
