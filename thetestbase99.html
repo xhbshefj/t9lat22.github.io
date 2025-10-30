@@ -1265,7 +1265,7 @@ requestAnimationFrame(trackFPS);
 </div>
   
 <script>
-  const navbar = document.getElementById('navbar');
+const navbar = document.getElementById('navbar');
 
 // Load saved state
 window.onload = function() {
@@ -1277,10 +1277,9 @@ window.onload = function() {
   }
 };
 
-// Toggle between vertical & horizontal
+// Toggle function
 function toggleNavbar() {
-  const isVertical = navbar.dataset.orientation === 'vertical';
-  if (isVertical) {
+  if (navbar.dataset.orientation === 'vertical') {
     makeHorizontal();
     localStorage.setItem('navbarState', 'horizontal');
   } else {
@@ -1289,6 +1288,7 @@ function toggleNavbar() {
   }
 }
 
+// Horizontal style
 function makeHorizontal() {
   navbar.style.bottom = '10px';
   navbar.style.left = '50%';
@@ -1301,6 +1301,7 @@ function makeHorizontal() {
   navbar.dataset.orientation = 'horizontal';
 }
 
+// Vertical style
 function makeVertical() {
   navbar.style.top = '50%';
   navbar.style.left = '15px';
@@ -1312,6 +1313,10 @@ function makeVertical() {
   navbar.style.padding = '10px 0';
   navbar.dataset.orientation = 'vertical';
 }
+
+
+// Toggle between vertical & horizontal
+
 
 </script>
 
