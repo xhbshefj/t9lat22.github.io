@@ -1873,6 +1873,7 @@ box.addEventListener('pointerdown', e => {
     box.style.left = rect.left + 'px';
     box.style.top = rect.top + 'px';
 
+    // Lock pointer so dragging continues outside the div
     box.setPointerCapture(e.pointerId);
     box.style.cursor = 'grabbing';
 
@@ -1891,12 +1892,13 @@ box.addEventListener('pointerdown', e => {
         box.releasePointerCapture(e.pointerId);
         box.style.cursor = 'grab';
 
-        box.removeEventListener('pointermove', handleMove);
-        box.removeEventListener('pointerup', handleUp);
+        document.removeEventListener('pointermove', handleMove);
+        document.removeEventListener('pointerup', handleUp);
     }
 
-    box.addEventListener('pointermove', handleMove);
-    box.addEventListener('pointerup', handleUp);
+    // Attach move/up to document so buttons inside div remain clickable
+    document.addEventListener('pointermove', handleMove);
+    document.addEventListener('pointerup', handleUp);
 });
 
 
