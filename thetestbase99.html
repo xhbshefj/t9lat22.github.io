@@ -1853,34 +1853,33 @@ if (selectedBackground) {
 
 <script>
 const box = document.getElementById('settingsDiv');
+const DRAG_HEIGHT = 50; // top 50px is draggable
 
 box.addEventListener('pointerdown', e => {
     e.preventDefault();
 
-    // Immediately set cursor
-    box.style.cursor = 'grabbing';
-
-    // Get current position
     const rect = box.getBoundingClientRect();
+    const offsetYInDiv = e.clientY - rect.top;
 
-    // Calculate pointer offset inside the div
+    // Only start drag if pointer is within top DRAG_HEIGHT
+    if (offsetYInDiv > DRAG_HEIGHT) return;
+
     const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
+    const offsetY = offsetYInDiv;
 
-    // Immediately convert centered div into left/top coordinates
+    // Convert centered div to draggable left/top
     box.style.inset = 'auto';
     box.style.margin = '0';
     box.style.left = rect.left + 'px';
     box.style.top = rect.top + 'px';
 
-    // Lock pointer capture
     box.setPointerCapture(e.pointerId);
+    box.style.cursor = 'grabbing';
 
     function handleMove(e) {
         let newX = e.clientX - offsetX;
         let newY = e.clientY - offsetY;
 
-        // Keep inside viewport
         newX = Math.max(0, Math.min(newX, window.innerWidth - box.offsetWidth));
         newY = Math.max(0, Math.min(newY, window.innerHeight - box.offsetHeight));
 
@@ -1899,6 +1898,7 @@ box.addEventListener('pointerdown', e => {
     box.addEventListener('pointermove', handleMove);
     box.addEventListener('pointerup', handleUp);
 });
+
 
 
 
