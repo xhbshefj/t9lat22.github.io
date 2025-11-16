@@ -1871,7 +1871,6 @@ divs.forEach(box => {
     let offsetX = 0;
     let offsetY = 0;
 
-    // Helper to check resize direction
     function getResizeDirection(e) {
         const rect = box.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -1889,22 +1888,17 @@ divs.forEach(box => {
 
     // Update cursor
     box.addEventListener('pointermove', e => {
-        const rect = box.getBoundingClientRect();
-        const offsetYInDiv = e.clientY - rect.top;
-
         if (isDragging || isResizing) return;
 
+        const rect = box.getBoundingClientRect();
+        const offsetYInDiv = e.clientY - rect.top;
         const dir = getResizeDirection(e);
-        if (dir) {
-            box.style.cursor = dir + '-resize';
-        } else if (offsetYInDiv <= DRAG_HEIGHT) {
-            box.style.cursor = 'grab';
-        } else {
-            box.style.cursor = 'default';
-        }
+
+        if (dir) box.style.cursor = dir + '-resize';
+        else if (offsetYInDiv <= DRAG_HEIGHT) box.style.cursor = 'grab';
+        else box.style.cursor = 'default';
     });
 
-    // Pointer down
     box.addEventListener('pointerdown', e => {
         const rect = box.getBoundingClientRect();
         const offsetYInDiv = e.clientY - rect.top;
@@ -1913,6 +1907,9 @@ divs.forEach(box => {
         if (dir) {
             isResizing = true;
             resizeDir = dir;
+            // Only set explicit width/height when resizing
+            box.style.width = rect.width + 'px';
+            box.style.height = rect.height + 'px';
         } else if (offsetYInDiv <= DRAG_HEIGHT) {
             isDragging = true;
             offsetX = e.clientX - rect.left;
@@ -1924,13 +1921,10 @@ divs.forEach(box => {
         box.style.margin = '0';
         box.style.left = rect.left + 'px';
         box.style.top = rect.top + 'px';
-        box.style.width = rect.width + 'px';
-        box.style.height = rect.height + 'px';
 
         box.style.cursor = isDragging ? 'grabbing' : dir + '-resize';
     });
 
-    // Pointer move
     document.addEventListener('pointermove', e => {
         const rect = box.getBoundingClientRect();
 
@@ -1962,7 +1956,6 @@ divs.forEach(box => {
                 newTop = e.clientY;
             }
 
-            // Minimum size
             newWidth = Math.max(50, newWidth);
             newHeight = Math.max(50, newHeight);
 
@@ -1973,7 +1966,6 @@ divs.forEach(box => {
         }
     });
 
-    // Pointer up
     document.addEventListener('pointerup', () => {
         if (isDragging || isResizing) {
             isDragging = false;
@@ -1983,6 +1975,7 @@ divs.forEach(box => {
     });
 });
 </script>
+
 
 
 
