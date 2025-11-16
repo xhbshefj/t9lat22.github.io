@@ -1,584 +1,852 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>nothing</title>
-     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7176221127189774"
-     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Portal - Play Free Online Games</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7176221127189774"
+    crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff4655;
+            --secondary: #0f1923;
+            --accent: #1f2d3d;
+            --light: #ece8e1;
+            --dark: #0f1923;
+            --card-bg: #1a2332;
+            --hover: #2a3a52;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--secondary) 0%, #1a2b3c 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        header {
+            background: rgba(15, 25, 35, 0.9);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(rgba(15, 25, 35, 0.7), rgba(15, 25, 35, 0.9));
+            margin-bottom: 40px;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #ff4655, #ff8e53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .games-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+            padding: 0 20px;
+        }
+
+        .game-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            display: block;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .game-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .game-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .game-btn {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
 </head>
 <body>
-     <input style="background: rgba(0,0,0,0.4);  
- 
-" type="text" id="searchBar" placeholder="Search games by name...">
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    <span>GamePortal</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
+    <section class="hero">
+        <div class="container">
+            <h1>Play Free Online Games</h1>
+            <p>Discover thousands of exciting games. No downloads required!</p>
+        </div>
+    </section>
 
-     <h1 class="gtext"></h1>
+    <div class="container">
+        <div class="games-container">
+            <!-- GAME BUTTONS - Copy and paste these to add more games -->
+            <a href="/rooftop2" class="game-btn">
+                <img src="rooftop2.png" alt="Rooftop Snipers 2">
+                <div class="game-title">Rooftop Snipers 2</div>
+            </a>
+            
+            <a href="/shell" class="game-btn">
+                <img src="shell.png" alt="Shell Shockers">
+                <div class="game-title">Shell Shockers</div>
+            </a>
+            
+            <a href="/clash" class="game-btn">
+                <img src="clash.png" alt="Clash Royale">
+                <div class="game-title">Clash Royale</div>
+            </a>
+            
+            <a href="/solarsmash" class="game-btn">
+                <img src="solar.png" alt="Solar Smash">
+                <div class="game-title">Solar Smash</div>
+            </a>
+            
+            <a href="/soccer-random" class="game-btn">
+                <img src="soccer-random.png" alt="Soccer Random">
+                <div class="game-title">Soccer Random</div>
+            </a>
+            
+            <a href="/sniper" class="game-btn">
+                <img src="sniper.png" alt="Sniper Shot">
+                <div class="game-title">Sniper Shot</div>
+            </a>
+            
+            <a href="/wheelie" class="game-btn">
+                <img src="wheelie.png" alt="Wheelie Bike 2">
+                <div class="game-title">Wheelie Bike 2</div>
+            </a>
+            
+            <a href="/block" class="game-btn">
+                <img src="blockblast.png" alt="Block Blast">
+                <div class="game-title">Block Blast</div>
+            </a>
+            
+            <a href="/crazycars" class="game-btn">
+                <img src="crazycars.png" alt="Crazy Cars">
+                <div class="game-title">Crazy Cars</div>
+            </a>
+            
+            <a href="/slowroad" class="game-btn">
+                <img src="slow.png" alt="Slow Roads">
+                <div class="game-title">Slow Roads</div>
+            </a>
+            
+            <a href="/miami" class="game-btn">
+                <img src="miami.png" alt="Hotline Miami">
+                <div class="game-title">Hotline Miami</div>
+            </a>
+            
+            <a href="/baseball" class="game-btn">
+                <img src="baseball.png" alt="Baseball Bros">
+                <div class="game-title">Baseball Bros</div>
+            </a>
+            
+            <a href="/basketbros" class="game-btn">
+                <img src="basketbros.png" alt="Basketball Bros">
+                <div class="game-title">Basketball Bros</div>
+            </a>
+            
+            <a href="/football" class="game-btn">
+                <img src="footballbros.png" alt="Football Bros">
+                <div class="game-title">Football Bros</div>
+            </a>
+            
+            <a href="/jellytruck" class="game-btn">
+                <img src="jellytruck.png" alt="Jelly Truck">
+                <div class="game-title">Jelly Truck</div>
+            </a>
+            
+            <a href="/ultrakill" class="game-btn">
+                <img src="ultrakill.png" alt="Ultrakill">
+                <div class="game-title">Ultrakill</div>
+            </a>
+            
+            <a href="/friday" class="game-btn">
+                <img src="FNF.gif" alt="Friday Night Funkin">
+                <div class="game-title">Friday Night Funkin</div>
+            </a>
+            
+            <a href="/spookymoto" class="game-btn">
+                <img src="spookyland.png" alt="Moto X3M Spooky Land">
+                <div class="game-title">Moto X3M Spooky</div>
+            </a>
+            
+            <a href="/elastic" class="game-btn">
+                <img src="elastic.png" alt="Elastic Man">
+                <div class="game-title">Elastic Man</div>
+            </a>
+            
+            <a href="/drawjoust" class="game-btn">
+                <img src="joust.png" alt="Draw Joust">
+                <div class="game-title">Draw Joust</div>
+            </a>
+            
+            <a href="/crossy" class="game-btn">
+                <img src="crossy.jpg" alt="Crossy Road">
+                <div class="game-title">Crossy Road</div>
+            </a>
+            
+            <a href="/truck" class="game-btn">
+                <img src="clusterrush.png" alt="Cluster Rush">
+                <div class="game-title">Cluster Rush</div>
+            </a>
+            
+            <a href="/gunspin" class="game-btn">
+                <img src="gunspin.png" alt="Gun Spin">
+                <div class="game-title">Gun Spin</div>
+            </a>
+            
+            <a href="/escape2" class="game-btn">
+                <img src="escape2.png" alt="Escape Road 2">
+                <div class="game-title">Escape Road 2</div>
+            </a>
+            
+            <a href="/cookie" class="game-btn">
+                <img src="cookie.png" alt="Cookie Clicker">
+                <div class="game-title">Cookie Clicker</div>
+            </a>
+            
+            <a href="/crazykitty" class="game-btn">
+                <img src="kitty.png" alt="Crazy Kitty 3D">
+                <div class="game-title">Crazy Kitty 3D</div>
+            </a>
+            
+            <a href="/ninjanf" class="game-btn">
+                <img src="fninja.jpg" alt="Fruit Ninja">
+                <div class="game-title">Fruit Ninja</div>
+            </a>
+            
+            <a href="/usservice" class="game-btn">
+                <img src="among.webp" alt="Among Us">
+                <div class="game-title">Among Us</div>
+            </a>
+            
+            <a href="/kartz" class="game-btn">
+                <img src="smash.png" alt="Smash Kartz">
+                <div class="game-title">Smash Kartz</div>
+            </a>
+            
+            <a href="/run" class="game-btn">
+                <img src="run.png" alt="Run">
+                <div class="game-title">Run</div>
+            </a>
+            
+            <a href="/run2" class="game-btn">
+                <img src="run2.png" alt="Run 2">
+                <div class="game-title">Run 2</div>
+            </a>
+            
+            <a href="/minecraft" class="game-btn">
+                <img src="mine2.png" alt="Minecraft">
+                <div class="game-title">Minecraft</div>
+            </a>
+            
+            <a href="/garden" class="game-btn">
+                <img src="garden.png" alt="Grow a Garden">
+                <div class="game-title">Grow a Garden</div>
+            </a>
+            
+            <a href="/dino" class="game-btn">
+                <img src="dino.png" alt="Dinosaur Game">
+                <div class="game-title">Dinosaur Game</div>
+            </a>
+            
+            <a href="/2048" class="game-btn">
+                <img src="2048.png" alt="2048">
+                <div class="game-title">2048</div>
+            </a>
+            
+            <a href="/wheels" class="game-btn">
+                <img src="wheels.png" alt="Happy Wheels">
+                <div class="game-title">Happy Wheels</div>
+            </a>
+            
+            <a href="/baldi" class="game-btn">
+                <img src="baldi.png" alt="Baldi">
+                <div class="game-title">Baldi</div>
+            </a>
+            
+            <a href="/slope" class="game-btn">
+                <img src="slope1.png" alt="Slope">
+                <div class="game-title">Slope</div>
+            </a>
+            
+            <a href="/roblox" class="game-btn">
+                <img src="roblox.png" alt="Roblox">
+                <div class="game-title">Roblox</div>
+            </a>
+            
+            <a href="/fnaf" class="game-btn">
+                <img src="fnaf.png" alt="Five Nights at Freddy's">
+                <div class="game-title">Five Nights at Freddy's</div>
+            </a>
+            
+            <a href="/run3" class="game-btn">
+                <img src="run3.png" alt="Run 3">
+                <div class="game-title">Run 3</div>
+            </a>
+            
+            <a href="/temple" class="game-btn">
+                <img src="temple.png" alt="Temple Run">
+                <div class="game-title">Temple Run</div>
+            </a>
+            
+            <a href="/tetris" class="game-btn">
+                <img src="tetris.png" alt="Tetris">
+                <div class="game-title">Tetris</div>
+            </a>
+            
+            <a href="/stickhook" class="game-btn">
+                <img src="stickhook.png" alt="Stickman Hook">
+                <div class="game-title">Stickman Hook</div>
+            </a>
+            
+            <a href="/core" class="game-btn">
+                <img src="core.png" alt="Core Ball">
+                <div class="game-title">Core Ball</div>
+            </a>
+            
+            <a href="/stack/" class="game-btn">
+                <img src="stack.png" alt="Stack Block">
+                <div class="game-title">Stack Block</div>
+            </a>
+            
+            <a href="/flip" class="game-btn">
+                <img src="flip.png" alt="Just Flip">
+                <div class="game-title">Just Flip</div>
+            </a>
+            
+            <a href="/gta5" class="game-btn">
+                <img src="gta6.png" alt="GTA">
+                <div class="game-title">GTA</div>
+            </a>
+            
+            <a href="/box" class="game-btn">
+                <img src="https://cdn2.steamgriddb.com/thumb/c442b40dabc7f4bda930bef2b5d100fc.jpg" alt="Incredibox">
+                <div class="game-title">Incredibox</div>
+            </a>
+            
+            <a href="/soccer" class="game-btn">
+                <img src="football.png" alt="Football Legends">
+                <div class="game-title">Football Legends</div>
+            </a>
+            
+            <a href="/shortlife" class="game-btn">
+                <img src="shortlife.png" alt="Short Life">
+                <div class="game-title">Short Life</div>
+            </a>
+            
+            <a href="/manic" class="game-btn">
+                <img src="manic.png" alt="Moto Maniac">
+                <div class="game-title">Moto Maniac</div>
+            </a>
+            
+            <a href="/slope2" class="game-btn">
+                <img src="slope2.png" alt="Slope 2">
+                <div class="game-title">Slope 2</div>
+            </a>
+            
+            <a href="/thrill" class="game-btn">
+                <img src="thrill.png" alt="Aqua Thrill">
+                <div class="game-title">Aqua Thrill</div>
+            </a>
+            
+            <a href="/stair" class="game-btn">
+                <img src="stair.png" alt="Stair Race 3D">
+                <div class="game-title">Stair Race 3D</div>
+            </a>
+            
+            <a href="/blight" class="game-btn">
+                <img src="blight.png" alt="Blight">
+                <div class="game-title">Blight</div>
+            </a>
+            
+            <a href="/vex" class="game-btn">
+                <img src="vex4.png" alt="Vex 4">
+                <div class="game-title">Vex 4</div>
+            </a>
+            
+            <a href="/hallow" class="game-btn">
+                <img src="https://i.ibb.co/dmBbf5s/Screenshot-2024-04-10-7-06-13-PM.png" alt="Secrets of Hallowland">
+                <div class="game-title">Secrets of Hallowland</div>
+            </a>
+            
+            <a href="/tapgoal" class="game-btn">
+                <img src="tap.webp" alt="Tap Goal">
+                <div class="game-title">Tap Goal</div>
+            </a>
+            
+            <a href="/snowrider" class="game-btn">
+                <img src="/img/snow.png" alt="Snow Rider">
+                <div class="game-title">Snow Rider</div>
+            </a>
+            
+            <a href="/rocketsoccer" class="game-btn">
+                <img src="img/soccer.png" alt="Rocket Soccer">
+                <div class="game-title">Rocket Soccer</div>
+            </a>
+            
+            <a href="/superhot" class="game-btn">
+                <img src="/img/superhot.png" alt="Super Hot">
+                <div class="game-title">Super Hot</div>
+            </a>
+            
+            <a href="/funnyshooter" class="game-btn">
+                <img src="funny.png" alt="Funny Shooter 2">
+                <div class="game-title">Funny Shooter 2</div>
+            </a>
+            
+            <a href="/icedodo" class="game-btn">
+                <img src="ice.jpg" alt="Ice Dodo">
+                <div class="game-title">Ice Dodo</div>
+            </a>
+            
+            <a href="/eggy-car-main/eggy-car-main/frame" class="game-btn">
+                <img src="eggy.jpg" alt="Eggy Car">
+                <div class="game-title">Eggy Car</div>
+            </a>
+            
+            <a href="/holeio" class="game-btn">
+                <img src="holeio.png" alt="Hole.io">
+                <div class="game-title">Hole.io</div>
+            </a>
+            
+            <a href="/dmad" class="game-btn">
+                <img src="dmad.png" alt="Drive Mad">
+                <div class="game-title">Drive Mad</div>
+            </a>
+            
+            <a href="/cubeshot" class="game-btn">
+                <img src="cubeshot.png" alt="Cubeshot">
+                <div class="game-title">Cubeshot</div>
+            </a>
+            
+            <a href="/1v1" class="game-btn">
+                <img src="1v1.jpg" alt="1v1 LOL">
+                <div class="game-title">1v1 LOL</div>
+            </a>
+            
+            <a href="/bitlifeservice" class="game-btn">
+                <img src="bitlife.png" alt="Bitlife">
+                <div class="game-title">Bitlife</div>
+            </a>
+            
+            <a href="/jet" class="game-btn">
+                <img src="jet.png" alt="Jetpack Joyride">
+                <div class="game-title">Jetpack Joyride</div>
+            </a>
+            
+            <a href="/ovo" class="game-btn">
+                <img src="ovo.png" alt="Ovo">
+                <div class="game-title">Ovo</div>
+            </a>
+            
+            <a href="/granny" class="game-btn">
+                <img src="granny.png" alt="Granny">
+                <div class="game-title">Granny</div>
+            </a>
+            
+            <a href="/grandvegas" class="game-btn">
+                <img src="grandvegas.png" alt="Grand Vegas">
+                <div class="game-title">Grand Vegas</div>
+            </a>
+            
+            <a href="/polytrack" class="game-btn">
+                <img src="polytrack.png" alt="Polytrack">
+                <div class="game-title">Polytrack</div>
+            </a>
+            
+            <a href="/subwayhw" class="game-btn">
+                <img src="subwayHW.png" alt="Subway Surfers">
+                <div class="game-title">Subway Surfers</div>
+            </a>
+            
+            <a href="/basket" class="game-btn">
+                <img src="basketL.png" alt="Basketball Legends">
+                <div class="game-title">Basketball Legends</div>
+            </a>
+            
+            <a href="/timeshooter3" class="game-btn">
+                <img src="timeshooter.png" alt="Timeshooter 3">
+                <div class="game-title">Timeshooter 3</div>
+            </a>
+            
+            <a href="/moneyroll" class="game-btn">
+                <img src="moneyroll.png" alt="Money Roll">
+                <div class="game-title">Money Roll</div>
+            </a>
+            
+            <a href="/backrooms" class="game-btn">
+                <img src="backrooms.png" alt="Backrooms">
+                <div class="game-title">Backrooms</div>
+            </a>
+            
+            <a href="/fnaf2" class="game-btn">
+                <img src="fnaf2.png" alt="Five Nights at Freddy's 2">
+                <div class="game-title">Five Nights at Freddy's 2</div>
+            </a>
+            
+            <a href="/bowl" class="game-btn">
+                <img src="bowl.png" alt="Retro Bowl">
+                <div class="game-title">Retro Bowl</div>
+            </a>
+            
+            <a href="/uno" class="game-btn">
+                <img src="uno.png" alt="Uno">
+                <div class="game-title">Uno</div>
+            </a>
+            
+            <a href="/burgeria" class="game-btn">
+                <img src="burgeria.png" alt="Burgeria">
+                <div class="game-title">Burgeria</div>
+            </a>
+            
+            <a href="/pou" class="game-btn">
+                <img src="pou.png" alt="Pou">
+                <div class="game-title">Pou</div>
+            </a>
+            
+            <a href="/johnny" class="game-btn">
+                <img src="johnny.png" alt="Johnny">
+                <div class="game-title">Johnny</div>
+            </a>
+            
+            <a href="/robber" class="game-btn">
+                <img src="robber2.png" alt="Bob the Robber 2">
+                <div class="game-title">Bob the Robber 2</div>
+            </a>
+            
+            <a href="/wordle" class="game-btn">
+                <img src="wordle.png" alt="Wordle">
+                <div class="game-title">Wordle</div>
+            </a>
+            
+            <a href="/onlyup" class="game-btn">
+                <img src="onlyup.png" alt="Onlyup">
+                <div class="game-title">Onlyup</div>
+            </a>
+            
+            <a href="/tinyfishing" class="game-btn">
+                <img src="fishing.png" alt="Tinyfishing">
+                <div class="game-title">Tinyfishing</div>
+            </a>
+            
+            <a href="/goball" class="game-btn">
+                <img src="goball.png" alt="Goball">
+                <div class="game-title">Goball</div>
+            </a>
+            
+            <a href="/helix" class="game-btn">
+                <img src="helix.png" alt="Helix">
+                <div class="game-title">Helix</div>
+            </a>
+            
+            <a href="/hohazards" class="game-btn">
+                <img src="hohazards.png" alt="House of Hazards">
+                <div class="game-title">House of Hazards</div>
+            </a>
+            
+            <a href="/president" class="game-btn">
+                <img src="president.png" alt="President Simulator">
+                <div class="game-title">President Simulator</div>
+            </a>
+            
+            <a href="/pokemon" class="game-btn">
+                <img src="pokemon.png" alt="Pokemon Red">
+                <div class="game-title">Pokemon Red</div>
+            </a>
+            
+            <a href="/granny2" class="game-btn">
+                <img src="granny2.png" alt="Granny 2">
+                <div class="game-title">Granny 2</div>
+            </a>
+            
+            <a href="/hunter" class="game-btn">
+                <img src="hunter.png" alt="Drift Hunter">
+                <div class="game-title">Drift Hunter</div>
+            </a>
+            
+            <a href="/just" class="game-btn">
+                <img src="just.png" alt="Just Fall">
+                <div class="game-title">Just Fall</div>
+            </a>
+            
+            <a href="/pacman" class="game-btn">
+                <img src="pacman.png" alt="Pacman">
+                <div class="game-title">Pacman</div>
+            </a>
+            
+            <a href="/knife" class="game-btn">
+                <img src="knife.png" alt="Knife Hit">
+                <div class="game-title">Knife Hit</div>
+            </a>
+            
+            <a href="https://t9lat22.github.io/crazycattle3d/.html" class="game-btn">
+                <img src="sheep.png" alt="Crazy Cattle 3D">
+                <div class="game-title">Crazy Cattle 3D</div>
+            </a>
+            
+            <a href="/window" class="game-btn">
+                <img src="window.png" alt="The Man from the Window">
+                <div class="game-title">The Man from the Window</div>
+            </a>
+            
+            <a href="/capybara" class="game-btn">
+                <img src="capybara.png" alt="Capybara Clicker">
+                <div class="game-title">Capybara Clicker</div>
+            </a>
+            
+            <a href="/balditrip" class="game-btn">
+                <img src="balditrip.png" alt="Baldi Field Trip">
+                <div class="game-title">Baldi Field Trip</div>
+            </a>
+            
+            <a href="/basketrandom" class="game-btn">
+                <img src="basketrandom.png" alt="Basket Random">
+                <div class="game-title">Basket Random</div>
+            </a>
+            
+            <a href="/deathrun" class="game-btn">
+                <img src="deathrun.png" alt="Death Run 3D">
+                <div class="game-title">Death Run 3D</div>
+            </a>
+            
+            <a href="/axe" class="game-btn">
+                <img src="axe.png" alt="Axe Random">
+                <div class="game-title">Axe Random</div>
+            </a>
+            
+            <a href="/motox3m" class="game-btn">
+                <img src="moto.png" alt="Moto X3M">
+                <div class="game-title">Moto X3M</div>
+            </a>
+            
+            <a href="/driftboss" class="game-btn">
+                <img src="driftboss.png" alt="Drift Boss">
+                <div class="game-title">Drift Boss</div>
+            </a>
+            
+            <a href="/bullet" class="game-btn">
+                <img src="bullet.png" alt="Mr Bullet">
+                <div class="game-title">Mr Bullet</div>
+            </a>
+            
+            <a href="/volleyball-random/" class="game-btn">
+                <img src="volleyball.png" alt="Volleyball Random">
+                <div class="game-title">Volleyball Random</div>
+            </a>
+            
+            <a href="/draw" class="game-btn">
+                <img src="draw.png" alt="Draw Climber">
+                <div class="game-title">Draw Climber</div>
+            </a>
+            
+            <a href="/snowball" class="game-btn">
+                <img src="snow.png" alt="Snowball.io">
+                <div class="game-title">Snowball.io</div>
+            </a>
+            
+            <a href="/duel" class="game-btn">
+                <img src="duel.png" alt="Stickman Duel Battle">
+                <div class="game-title">Stickman Duel Battle</div>
+            </a>
+            
+            <a href="/pixel" class="game-btn">
+                <img src="pixel.png" alt="Pixel Gun 3d">
+                <div class="game-title">Pixel Gun 3d</div>
+            </a>
+            
+            <a href="/duck" class="game-btn">
+                <img src="duck.png" alt="Duck Life">
+                <div class="game-title">Duck Life</div>
+            </a>
+            
+            <a href="/riddle" class="game-btn">
+                <img src="riddle.png" alt="Riddle School">
+                <div class="game-title">Riddle School</div>
+            </a>
+            
+            <a href="/riddle2" class="game-btn">
+                <img src="riddle2.png" alt="Riddle School 2">
+                <div class="game-title">Riddle School 2</div>
+            </a>
+            
+            <a href="/riddle3" class="game-btn">
+                <img src="riddle3.png" alt="Riddle School 3">
+                <div class="game-title">Riddle School 3</div>
+            </a>
+            
+            <a href="/barry" class="game-btn">
+                <img src="barry.png" alt="Barry Prison">
+                <div class="game-title">Barry Prison</div>
+            </a>
+            
+            <a href="/brainrot" class="game-btn">
+                <img src="brainrot.png" alt="Steal a Brainrot">
+                <div class="game-title">Steal a Brainrot</div>
+            </a>
+            
+            <a href="/golf" class="game-btn">
+                <img src="golf.png" alt="Battle Golf">
+                <div class="game-title">Battle Golf</div>
+            </a>
+            
+            <a href="/worldcup" class="game-btn">
+                <img src="worldcup.png" alt="A Small World Cup">
+                <div class="game-title">A Small World Cup</div>
+            </a>
+            
+            <a href="/snakeio" class="game-btn">
+                <img src="snakeio.png" alt="Snake.io">
+                <div class="game-title">Snake.io</div>
+            </a>
+            
+            <a href="/speedstars" class="game-btn">
+                <img src="speedstars.png" alt="Speed Stars">
+                <div class="game-title">Speed Stars</div>
+            </a>
+            
+            <!-- ADD MORE GAMES HERE USING THE SAME FORMAT -->
+            <!-- 
+            <a href="/YOUR_GAME_LINK" class="game-btn">
+                <img src="YOUR_IMAGE.png" alt="YOUR_GAME_NAME">
+                <div class="game-title">YOUR_GAME_NAME</div>
+            </a>
+            -->
+            
+        </div>
+    </div>
 
- 
-
-     <div id="imageContainer">
-  <a href="https://forms.gle/idyRqPcwSoj5Mmjv6">
-    <span>Request a game</span>
-    <img class="btn" src="request.png">
-         </a>
-            <a href='/terms.html'>
-    <img class="btn" src="TERM.png" alt="terms">
-         </a>
-     
-           <a href='https://forms.gle/17gCot1LnhMJghiT7' target="_blank">
-    <img class="btn" src="dmca.png" alt="terms">
-         </a>
-
-         <a href='/rooftop2.html'>
-    <img class="btn" src="rooftop2.png" alt="Rooftop snipers 2">
-         </a>
-        
- <a href='/shell.html'>
-    <img class="btn" src="shell.png" alt="shell shockers">
-         </a>
-
-         <a href='/clash.html'>
-    <img class="btn" src="clash.png" alt="clash royale">
-         </a>
-
-             <a href='/solarsmash.html'>
-    <img class="btn" src="solar.png" alt="solar smash">
-         </a>
-   <a href='/soccer-random.html'>
-    <img class="btn" src="soccer-random.png" alt="soccer random">
-         </a>
-<a href='/sniper.html'>
-    <img class="btn" src="sniper.png" alt="sniper shot bullet time">
-         </a>
-
-          <a href='/wheelie.html'>
-    <img class="btn" src="wheelie.png" alt="wheelie bike 2 ">
-         </a>
-
-         <a href='/block.html'>
-    <img class="btn" src="blockblast.png" alt="block blast">
-         </a>
- <a href='/crazycars.html'>
-    <img class="btn" src="crazycars.png" alt="crazy cars">
-         </a>
-         
-
-  <a href='/slowroad.html'>
-    <img class="btn" src="slow.png" alt="slowroads">
-         </a>
-
-             <a href='/miami.html'>
-    <img class="btn" src="miami.png" alt="hotline miami">
-         </a>
-
-           <a href='/baseball.html'>
-    <img class="btn" src="baseball.png" alt="baseball bros">
-         </a>
-
-          <a href='/basketbros.html'>
-    <img class="btn" src="basketbros.png" alt="basketball bros">
-         </a>
-
-          <a href='/football.html'>
-    <img class="btn" src="footballbros.png" alt="football bros">
-         </a>
-
-            <a href='/jellytruck.html'>
-    <img class="btn" src="jellytruck.png" alt="jelly truck">
-         </a>
-
-           <a href='/ultrakill.html'>
-    <img class="btn" src="ultrakill.png" alt="ultrakill">
-         </a>
-
-
-           <a href='/friday.html'>
-    <img class="btn" src="FNF.gif" alt="friday night funkin" alt="fnf">
-         </a>
-   
-         <a href='/spookymoto.html'>
-    <img class="btn" src="spookyland.png" alt="moto x3m spooky land  ">
-         </a>
-
-         <a href='/elastic.html'>
-    <img class="btn" src="elastic.png" alt="elastic man">
-         </a>
-
-        <a href='/drawjoust.html'>
-    <img class="btn" src="joust.png" alt="draw joust">
-         </a>
-    
-    <a href='/crossy.html'>
-    <img class="btn" src="crossy.jpg" alt="crossy road">
-         </a>
-
-           <a href='/truck.html'>
-    <img class="btn" src="clusterrush.png" alt="cluster rush">
-         </a>
-
-          <a href='/gunspin.html'>
-    <img class="btn" src="gunspin.png" alt="gun spin">
-         </a>
-
-
-           <a href='/escape2.html'>
-    <img class="btn" src="escape2.png" alt="escape road 2">
-         </a>
-         
-         <a href='/cookie.html'>
-    <img class="btn" src="cookie.png" alt="cookie clicker">
-         </a>
-    
-   <a href='/crazykitty.html'>
-    <img class="btn" src="kitty.png" alt="crazy kitty 3d">
-         </a>
-     
-    
-     <a href='/ninjanf.html'>
-    <img class="btn" src="fninja.jpg" alt="fruit ninja">
-         </a>
-          <a href='/usservice.html'>
-    <img class="btn" src="among.webp" alt="among us">
-         </a>
-          <a href='/kartz.html'>
-          <img class="btn" src="smash.png" alt="smash kartz">
-         </a>
-
-          <a href='/run.html'>
-    <img class="btn" src="run.png" alt="run">
-         </a>
-         
-         
-          
-    <a href='/run2.html'>
-    <img class="btn" src="run2.png" alt="run 2">
-         </a>
-
-         <a href='/minecraft.html'>
-    <img class="btn" src="mine2.png" alt="eaglercraft"  alt="minecraft">
-         </a>
-
-    <a href='/garden.html'>
-    <img class="btn" src="garden.png" alt="grow a garden">
-         </a>
-         
-          <a href='/dino.html'>
-    <img class="btn" src="dino.png" alt="dinosour game">
-         </a>
-         
-        
-         
-         <a href='/2048.html'>
-    <img class="btn" src="2048.png" alt="2048">
-         </a>
-         
-          <a href='/wheels.html'>
-    <img class="btn" src="wheels.png"alt="happy wheels">
-         </a>
-    
-     <a href='/baldi.html'>
-    <img class="btn" src="baldi.png" alt="baldi">
-         </a>
-    
-
-         
-          <a href='/slope.html'>
-    <img class="btn" src="slope1.png" alt="slope">
-         </a>
-   
-         
-            <a href='/roblox.html'>
-    <img class="btn" src="roblox.png" alt="roblox">
-         </a>
-         
-         
-        <a href='/fnaf.html'>
-    <img class="btn" src="fnaf.png" alt="fnaf" alt="five nights at freddy">
-         </a>
-         
-          <a href='/run3.html'>
-    <img class="btn" src="run3.png" alt="run 3">
-         </a>
-         
-          <a href='/temple.html'>
-    <img class="btn" src="temple.png" alt="temple run">
-         </a>
-         
-         <a href='/tetris.html'>
-    <img class="btn" src="tetris.png" alt="tetris">
-         </a>
-         
-       
-         
-         <a href='/stickhook.html'>
-    <img class="btn" src="stickhook.png" alt="stickman hook">
-         </a>
-         
-        
-         
-          <a href='/core.html'>
-    <img class="btn" src="core.png" alt="core ball">
-         </a>
-    
-         
-        
-         
-         <a href='/stack/index.html'>
-    <img class="btn" src="stack.png" alt="stack block">
-         </a>
-         
-          <a href='/flip.html'>
-    <img class="btn" src="flip.png" alt="just flip">
-         </a>
-         
-         <a href='/gta5.html'>
-    <img class="btn" src="gta6.png" alt="gta">
-         </a>
-         
-         <a href='/box.html'>
-    <img class="btn" src="https://cdn2.steamgriddb.com/thumb/c442b40dabc7f4bda930bef2b5d100fc.jpg" alt="incredibox">
-         </a>
-         
-         <a href='/soccer.html'>
-    <img class="btn" src="football.png" alt="football legends">
-         </a>
-         
-         <a href='/shortlife.html'>
-    <img class="btn" src="shortlife.png" alt="short life">
-         </a>
-         
-          <a href='/manic.html'>
-    <img class="btn" src="manic.png" alt="moto maniac">
-         </a>
-         
-         <a href='/slope2.html'>
-             <img class="btn" src="slope2.png" alt="slope 2">
-         </a>
-         
-         <a href='/thrill.html'>
-             <img class="btn" src="thrill.png" alt="aqua thrill">
-         </a>
-         
-         <a href='/shortride.html'>
-             <img class="btn" src="shortlife.png" alt="short ride">
-         </a>
-         
-         <a href='/stair.html'>
-             <img class="btn" src="stair.png" alt="stair race 3d">
-         </a>
-         
-          <a href='/blight.html'>
-             <img class="btn" src="blight.png">
-         </a>
-         
-          <a href='/vex.html'>
-             <img class="btn" src="vex4.png" alt="vex 4">
-         </a>
-    
-    <a href='/hallow.html'>
-             <img class="btn" src="https://i.ibb.co/dmBbf5s/Screenshot-2024-04-10-7-06-13-PM.png" alt="secrets of hallowland">
-         </a>
-      
-            <a href='/tapgoal.html'>
-             <img class="btn" src="tap.webp" alt="tap goal">
-         </a>
-    </a>
-    <a href='/snowrider.html'>
-     <img class="btn" src="/img/snow.png" alt="snow rider">
-    </a>
-    <a href='/rocketsoccer.html'>
-         <img class="btn" src="img/soccer.png" alt="rocket soccer">
-    </a>
-        <a href='/superhot.html'>
-         <img class="btn" src="/img/superhot.png" alt="super hot">
-        </a> 
-             <a href='/funnyshooter.html'>
-         <img class="btn" src="funny.png" alt="funny shooter 2">
-        </a>
-                <a href='/icedodo.html'>
-         <img class="btn" src="ice.jpg" alt="ice dodo">
-        </a>
-                   <a href='/eggy-car-main/eggy-car-main/frame.html'>
-         <img class="btn" src="eggy.jpg" alt="eggy car">
-        </a>
-        <a href='/holeio.html'>
-          <img class="btn" src="holeio.png" alt="hole.io">
-         </a>
-       
-         <a href='/dmad.html'>
-          <img class="btn" src="dmad.png" alt="drive mad">
-         </a>
-         <a href='/cubeshot.html'>
-          <img class="btn" src="cubeshot.png" alt="cubeshot">
-         </a>
-         <a href='/1v1.html'>
-          <img class="btn" src="1v1.jpg" alt="1v1 lol">
-         </a>
-         <a href='/bitlifeService.html'>
-          <img class="btn" src="bitlife.png" alt="bitlife">
-         </a>
-         <a href='/jet.html'>
-          <img class="btn" src="jet.png" alt="jetpack joyride">
-         </a>
-        
-         <a href='/ovo.html'>
-          <img class="btn" src="ovo.png" alt="ovo">
-         </a>
-         <a href='/granny.html'>
-          <img class="btn" src="granny.png" alt="granny">
-         </a>
-         <a href='/grandvegas.html'>
-          <img class="btn" src="grandvegas.png" alt="grand vegas">
-         </a>    
-         <a href='/polytrack.html'>
-          <img class="btn" src="polytrack.png" alt="polytrack">
-         </a>   
-         <a href='/subwayhw.html'>
-          <img class="btn" src="subwayHW.png" alt="subway surfers">
-         </a>  
-         <a href='/basket.html'>
-          <img class="btn" src="basketL.png" alt="basketball legends">
-         </a>   
-         <a href='/timeshooter3.html'>
-          <img class="btn" src="timeshooter.png" alt="timeshooter 3">
-         </a>   
-         <a href='/moneyroll.html'>
-          <img class="btn" src="moneyroll.png" alt="money roll">
-         </a>   
-         <a href='/backrooms.html'>
-          <img class="btn" src="backrooms.png" alt="backrooms">
-         </a> 
-         <a href='/fnaf2.html'>
-          <img class="btn" src="fnaf2.png" alt="fnaf2" alt="five nights at freddys 2">
-         </a> 
-         <a href='/bowl.html'>
-          <img class="btn" src="bowl.png" alt="retro bowl">
-         </a>  
-         <a href='/uno.html'>
-          <img class="btn" src="uno.png" alt="uno">
-         </a>  
-         <a href='/burgeria.html'>
-          <img class="btn" src="burgeria.png" alt="burgeria">
-         </a>   
-         <a href='/pou.html'>
-          <img class="btn" src="pou.png" alt="pou">
-         </a>  
-         <a href='/johnny.html'>
-          <img class="btn" src="johnny.png" alt="johnny">
-         </a>  
-         <a href='/robber.html'>
-          <img class="btn" src="robber2.png" alt="Bob the robber 2">
-         </a>  
-         <a href='/wordle.html'>
-          <img class="btn" src="wordle.png" alt="wordle">
-         </a>  
-         <a href='/onlyup.html'>
-          <img class="btn" src="onlyup.png" alt="onlyup">
-         </a> 
-         <a href='/tinyfishing.html'>
-          <img class="btn" src="fishing.png" alt="tinyfishing">
-         </a> 
-         <a href='/goball.html'>
-          <img class="btn" src="goball.png" alt="goball">
-         </a> 
-         
-         <a href='/helix.html'>
-          <img class="btn" src="helix.png" alt="helix">
-         </a> 
-         <a href='/hohazards.html'>
-          <img class="btn" src="hohazards.png" alt="house of hazards">
-         </a> 
-          
-         <a href='/president.html'>
-          <img class="btn" src="president.png" alt="president simulator">
-         </a> 
-         <a href='/pokemon.html'>
-          <img class="btn" src="pokemon.png" alt="pokemon red">
-         </a> 
-         <a href='/granny2.html'>
-          <img class="btn" src="granny2.png" alt="granny 2">
-         </a> 
-         <a href='/hunter.html'>
-          <img class="btn" src="hunter.png" alt="drift hunter">
-         </a> 
-         <a href='/just.html'>
-          <img class="btn" src="just.png" alt="just fall">
-         </a> 
-         <a href='/pacman.html'>
-          <img class="btn" src="pacman.png" alt="pacman">
-         </a> 
-         <a href='/knife.html'>
-          <img class="btn" src="knife.png" alt="knife hit">
-         </a> 
-         <a href="https://t9lat22.github.io/crazycattle3d/.html">
-          <img class="btn" src="sheep.png" alt="Crazy Cattle 3D">
-         </a> 
-         <a href='/window.html'>
-          <img class="btn" src="window.png" alt="The man from the window">
-         </a> 
-         <a href='/capybara.html'>
-          <img class="btn" src="capybara.png" alt="capybara clicker">
-         </a> 
-         <a href='/balditrip.html'>
-          <img class="btn" src="balditrip.png" alt="Baldi field trip">
-         </a> 
-         <a href='/basketrandom.html'>
-          <img class="btn" src="basketrandom.png" alt="Basket Random">
-         </a> 
-         <a href='/deathrun.html'>
-          <img class="btn" src="deathrun.png" alt="death run 3d">
-         </a> 
-         <a href='/axe.html'>
-          <img class="btn" src="axe.png" alt="axe random">
-         </a> 
-         <a href='/motox3m.html'>
-          <img class="btn" src="moto.png" alt="moto x3m">
-         </a> 
-         <a href='/driftboss.html'>
-          <img class="btn" src="driftboss.png" alt="drift boss">
-         </a> 
-         <a href='/bullet.html'>
-          <img class="btn" src="bullet.png" alt="mr bullet">
-         </a> 
-         <a href="/volleyball-random/index.html">
-          <img class="btn" src="volleyball.png" alt="volleyball random">
-         </a> 
-           <a href='/granny2.html'>
-          <img class="btn" src="granny2.png" alt="Granny 2">
-         </a>
-         <a href='/draw.html'>
-          <img class="btn" src="draw.png" alt="draw climber">
-         </a>  
-          <a href='/snowball.html'>
-          <img class="btn" src="snow.png" alt="snowball.io">
-         </a>  
-          <a href='/duel.html'>
-          <img class="btn" src="duel.png" alt="stickman duel battle">
-         </a>  
-          <a href='/pixel.html'>
-          <img class="btn" src="pixel.png" alt="Pixel gun 3d">
-         </a>  
-            <a href='/duck.html'>
-          <img class="btn" src="duck.png" alt="duck life">
-         </a>  
-         <a href='/riddle.html'>
-          <img class="btn" src="riddle.png" alt="riddle school">
-         </a>  
-            <a href='/riddle2.html'>
-          <img class="btn" src="riddle2.png" alt="riddle school 2">
-         </a>  
-           <a href='/riddle3.html'>
-          <img class="btn" src="riddle3.png" alt="riddle school 3">
-         </a> 
-          <a href='/barry.html'>
-          <img class="btn" src="barry.png" alt="barry prison">
-         </a> 
-           <a href='/brainrot.html'>
-          <img class="btn" src="brainrot.png" alt="steal a brainrot">
-         </a> 
-          <a href='/golf.html'>
-          <img class="btn" src="golf.png" alt="battle golf">
-         </a> 
-            <a href='/worldcup.html'>
-          <img class="btn" src="worldcup.png" alt="a small world cup">
-         </a> 
-            <a href='/snakeio.html'>
-          <img class="btn" src="snakeio.png" alt="snake.io">
-         </a> 
-          <a href='/speedstars.html'>
-          <img class="btn" src="speedstars.png" alt="speed stars">
-         </a> 
-          
-
-<style>
-      .btn {
-    width: 200px;
-    height: 200px;
-    border-radius: 200px ; /* Add !important to ensure it overrides other styles */
-    gap: 150px;
-    transition: transform 0.3s ease-in-out;
-    font-family: sans-serif;
-      transition: all 0.3s ease;   /* smooth hover */
-    font-size: 15px;
-}
-
-.btn:hover {
-    transform: translateY(-3px);
-    box-shadow: none;
-    border-radius: 50px !important; /* Ensure hover state also has the same border-radius */
-
-}
-.btn span {
-  margin-top: 8px;
-  display: block;
-  font-size: 15px;
-  color: #fff;
-}
-#searchBar{
-  text-align:center;
-  background: rgba(0, 0, 0, 0.3); 
-border: 1px solid rgba(255, 255, 255, 0.15);  
-  color: white;
-  border-radius: 15px;
-  left:43%;
-  padding: 10px 20px;
-  border-style: solid;
-  border-width: 2px;
-  border-color:rgb(255, 255, 255);
-    position: fixed; 
-  top: 10px;       
-  left: 50%;
-  transform: translateX(-50%); 
-  z-index: 1000; 
-
-}
-#imageContainer {
-  margin-top: 70px; 
-}
-    .gtext{
-          text-align:center;
-          font-family: sans-serif;
-background:none;  
-border-radius: 20px;           
-          color:#ffffff;
-                  
-     }
-      img {
-    width: 35px;
-    padding: 10px 20px;
-    border-radius: 25px;
-    transition: transform 0.3s ease-in-out;
-  }
-
-  img:hover {
-    transform: translateY(-3px);
-    box-shadow: none;
-    border-radius: 15px;
-  }
-  a{
-     outline:none;
-  }
-  a:focus{
-     outline:none;
-  }
- 
-</style>
-
-<script>
-  document.getElementById('searchBar').addEventListener('input', function () {
-    const searchTerm = this.value.toLowerCase();
-    const images = document.querySelectorAll('#imageContainer img');
-
-    images.forEach(image => {
-      const altText = image.getAttribute('alt') || '';
-      if (altText.toLowerCase().includes(searchTerm)) {
-        image.style.display = 'inline-block';
-      } else {
-        image.style.display = 'none';
-      }
-    });
-  });
-</script>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#" class="footer-link">Home</a>
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Privacy Policy</a>
+                <a href="#" class="footer-link">Terms of Service</a>
+                <a href="#" class="footer-link">Contact</a>
+            </div>
+            <p>&copy; 2023 GamePortal. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
