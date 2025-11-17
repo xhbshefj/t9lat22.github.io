@@ -1868,6 +1868,7 @@ const divs = [
 divs.forEach(box => {
     let isDragging = false;
     let isResizing = false;
+    let resizingCorner = ''; // 'bl' or 'br'
     let offsetX = 0;
     let offsetY = 0;
 
@@ -1878,30 +1879,33 @@ divs.forEach(box => {
     let startMouseX = 0;
     let startMouseY = 0;
 
-    function isInBottomCorners(e) {
+    function checkBottomCorner(e) {
         const rect = box.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        const inBottomLeft = x <= RESIZE_MARGIN && y >= rect.height - RESIZE_MARGIN;
-        const inBottomRight = x >= rect.width - RESIZE_MARGIN && y >= rect.height - RESIZE_MARGIN;
-
-        return inBottomLeft || inBottomRight;
+        if (y >= rect.height - RESIZE_MARGIN) {
+            if (x <= RESIZE_MARGIN) return 'bl'; // bottom-left
+            else if (x >= rect.width - RESIZE_MARGIN) return 'br'; // bottom-right
+        }
+        return '';
     }
 
     box.addEventListener('pointermove', e => {
         if (isDragging || isResizing) return;
         const rect = box.getBoundingClientRect();
         const offsetYInDiv = e.clientY - rect.top;
+        const corner = checkBottomCorner(e);
 
-        if (offsetYInDiv <= DRAG_HEIGHT) box.style.cursor = 'grab'; // top drag
-        else if (isInBottomCorners(e)) box.style.cursor = 'nwse-resize'; // bottom corners
+        if (offsetYInDiv <= DRAG_HEIGHT) box.style.cursor = 'grab';
+        else if (corner) box.style.cursor = 'nwse-resize';
         else box.style.cursor = 'default';
     });
 
     box.addEventListener('pointerdown', e => {
         const rect = box.getBoundingClientRect();
         const offsetYInDiv = e.clientY - rect.top;
+        const corner = checkBottomCorner(e);
 
         document.body.style.userSelect = 'none';
         box.style.inset = 'auto';
@@ -1911,16 +1915,17 @@ divs.forEach(box => {
         box.style.width = rect.width + 'px';
         box.style.height = rect.height + 'px';
 
-        // Start drag from top
+        // Drag from top
         if (offsetYInDiv <= DRAG_HEIGHT) {
             isDragging = true;
             offsetX = e.clientX - rect.left;
             offsetY = offsetYInDiv;
             box.style.cursor = 'grabbing';
         }
-        // Start resize from bottom corners
-        else if (isInBottomCorners(e)) {
+        // Resize from bottom corners
+        else if (corner) {
             isResizing = true;
+            resizingCorner = corner;
             startWidth = rect.width;
             startHeight = rect.height;
             startLeft = rect.left;
@@ -1942,27 +1947,40 @@ divs.forEach(box => {
         }
 
         if (isResizing) {
-            let deltaX = e.clientX - startMouseX;
-            let deltaY = e.clientY - startMouseY;
+            const deltaX = e.clientX - startMouseX;
+            const deltaY = e.clientY - startMouseY;
 
-            let newWidth = startWidth + deltaX;
-            let newHeight = startHeight + deltaY;
+            let newWidth = startWidth;
+            let newHeight = startHeight;
+            let newLeft = startLeft;
+
+            if (resizingCorner === 'br') {
+                newWidth = startWidth + deltaX;
+                newHeight = startHeight + deltaY;
+            } else if (resizingCorner === 'bl') {
+                newWidth = startWidth - deltaX;
+                newHeight = startHeight + deltaY;
+                newLeft = startLeft + deltaX;
+            }
 
             newWidth = Math.max(50, newWidth);
             newHeight = Math.max(50, newHeight);
 
             box.style.width = newWidth + 'px';
             box.style.height = newHeight + 'px';
+            box.style.left = newLeft + 'px';
         }
     });
 
     document.addEventListener('pointerup', () => {
         isDragging = false;
         isResizing = false;
+        resizingCorner = '';
         document.body.style.userSelect = '';
     });
 });
 </script>
+
 
 
 
