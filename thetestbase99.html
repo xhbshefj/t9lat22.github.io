@@ -1854,7 +1854,7 @@ if (selectedBackground) {
 
 <script>
 const DRAG_HEIGHT = 50;
-const RESIZE_EDGE = 12;
+const RESIZE_EDGE = 12; // How many pixels to count as the "corner"
 const MIN_W = 180;
 const MIN_H = 120;
 
@@ -1877,16 +1877,18 @@ function parseTranslate(transform) {
   return [0,0];
 }
 
-// *** THIS IS THE KEY FIX ***
-// This function converts your CSS centering (inset, margin, transform)
-// into a permanent left/top position, but only when it's first called.
+// *** THIS IS THE ANTI-JUMP FIX ***
+// This function runs ONCE on the first click to convert
+// your CSS centering (inset, margin) into a permanent left/top position.
 function normalizePosition(win) {
-  const cs = getComputedStyle(win);
-  if (win.dataset.normalized) return; // Already done
+  // If we already fixed this window, do nothing.
+  if (win.dataset.normalized) return; 
 
+  const cs = getComputedStyle(win);
   const rect = win.getBoundingClientRect();
   const [tx,ty] = parseTranslate(cs.transform);
   
+  // Calculate the exact pixel position
   win.style.left = Math.round(rect.left + tx + window.scrollX) + 'px';
   win.style.top  = Math.round(rect.top + ty + window.scrollY) + 'px';
   win.style.width = rect.width + 'px'; // Lock width
@@ -1896,7 +1898,7 @@ function normalizePosition(win) {
   win.style.inset = 'auto';
   win.style.margin = '0';
   win.style.transform = 'none';
-  win.style.position = 'fixed'; // Ensure it's fixed
+  win.style.position = 'fixed'; 
   
   // Mark as normalized so this never runs again
   win.dataset.normalized = 'true';
@@ -1907,26 +1909,29 @@ windows.forEach(win => {
   let grabOffset={x:0,y:0};
   let start={};
 
-  // Only allow resizing on the bottom edge and bottom corners (S, SE, SW)
+  // *** RESIZE FIX: Only allow resizing on the bottom corners (SW and SE) ***
   function getResizeDir(e) {
     const r = win.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
-    let dir = '';
     
+    // Check if cursor is in the bottom resize zone
     if (y > r.height - RESIZE_EDGE) {
-      dir += 's';
-      if (x > r.width - RESIZE_EDGE) dir += 'e'; 
-      else if (x < RESIZE_EDGE) dir += 'w'; 
+      // Check for bottom-right (SE)
+      if (x > r.width - RESIZE_EDGE) return 'se';
+      // Check for bottom-left (SW)
+      if (x < RESIZE_EDGE) return 'sw';
     }
-    return dir;
+    // If not in a corner, return empty
+    return '';
   }
 
   // Cursor feedback
   win.addEventListener('pointermove', e=>{
     if (dragging||resizing) return;
     const dir=getResizeDir(e);
-    const cursors={'s':'ns-resize', 'se':'nwse-resize', 'sw':'nesw-resize'};
+    // Updated cursor map for corners only
+    const cursors={'se':'nwse-resize', 'sw':'nesw-resize'};
     
     if (dir) {
       win.style.cursor=cursors[dir]||'default'; 
@@ -1934,6 +1939,7 @@ windows.forEach(win => {
     }
     
     const r=win.getBoundingClientRect();
+    // Draggable top bar
     if (e.clientY - r.top <= DRAG_HEIGHT) {
       win.style.cursor='grab';
     } else {
@@ -1944,7 +1950,7 @@ windows.forEach(win => {
   win.addEventListener('pointerdown', e=>{
     if (e.button!==0) return;
     
-    // *** THE ANTI-JUMP FIX ***
+    // *** ANTI-JUMP FIX RUNS HERE ***
     // This runs ONCE on the first click (drag, resize, or tap)
     // to lock the window's position and prevent the jump.
     normalizePosition(win); 
@@ -1997,6 +2003,7 @@ windows.forEach(win => {
       
       let newW=start.startW, newH=start.startH, newL=start.startL, newT=start.startT;
       
+      // These checks work for 'se' and 'sw'
       if (resizeDir.includes('e')) newW = start.startW + dx;
       if (resizeDir.includes('w')) {
         newW = start.startW - dx; 
@@ -2048,7 +2055,7 @@ windows.forEach(win => {
 
 
 
-<!--FIXED SCRIP 14-->
+<!--FIXED SCRIP 15-->
 
 
 
