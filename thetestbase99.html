@@ -1853,199 +1853,112 @@ if (selectedBackground) {
 
 
 <script>
-const DRAG_HEIGHT = 50;
-const RESIZE_EDGE = 12; 
-const MIN_W = 180;
-const MIN_H = 120;
+const DRAG_HEIGHT = 50; 
+const RESIZE_MARGIN = 20; 
 
-const ids = ['settingsDiv', 'aiDiv', 'hiddenDiv', 'updateDiv', 'searchDiv', 'ChatDiv'];
-const windows = ids.map(id => document.getElementById(id)).filter(Boolean);
+const divs = [
+  document.getElementById('settingsDiv'),
+  document.getElementById('aiDiv'),
+  document.getElementById('hiddenDiv'),
+  document.getElementById('updateDiv'),
+  document.getElementById('searchDiv'),
+  document.getElementById('ChatDiv')
+];
 
-// Utility function to parse CSS transform translate values
-function parseTranslate(transform) {
-  if (!transform || transform === 'none') return [0,0];
-  const m = transform.match(/matrix\(([^)]+)\)/);
-  if (m) {
-    const parts = m[1].split(',').map(s=>parseFloat(s.trim()));
-    return [parts[4]||0, parts[5]||0];
+divs.forEach(box => {
+  let isDragging = false;
+  let isResizing = false;
+
+  let startLeft = 0, startTop = 0, startWidth = 0, startHeight = 0;
+  let pointerDownX = 0, pointerDownY = 0;
+
+  function checkBottomRight(e) {
+    const rect = box.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    return (x >= rect.width - RESIZE_MARGIN && y >= rect.height - RESIZE_MARGIN);
   }
-  const t = transform.match(/translate\(([^)]+)\)/);
-  if (t) {
-    const parts = t[1].split(',').map(s=>parseFloat(s.trim()));
-    return [parts[0]||0, parts[1]||0];
-  }
-  return [0,0];
-}
 
-// Function to convert centering CSS into a stable left/top position
-function normalizePosition(win) {
-  const cs = getComputedStyle(win);
-  const rect = win.getBoundingClientRect();
-  const [tx,ty] = parseTranslate(cs.transform);
-  
-  // Calculate the exact pixel position
-  win.style.left = Math.round(rect.left + tx + window.scrollX) + 'px';
-  win.style.top  = Math.round(rect.top + ty + window.scrollY) + 'px';
-  win.style.width = rect.width + 'px';
-  win.style.height = rect.height + 'px';
+  box.addEventListener('pointermove', e => {
+    if (isDragging || isResizing) return;
+    const rect = box.getBoundingClientRect();
+    const offsetY = e.clientY - rect.top;
 
-  // Clear all conflicting CSS
-  win.style.inset = 'auto';
-  win.style.margin = '0';
-  win.style.transform = 'none';
-  win.style.position = 'fixed'; 
-  
-  win.dataset.normalized = 'true';
-}
-
-windows.forEach(win => {
-  let dragging=false, resizing=false, resizeDir='';
-  let start={};
-  let grabOffset={x:0,y:0};
-  let isPointerDown = false; 
-
-  // RESIZE: Only allow resizing on the bottom corners (SW and SE)
-  function getResizeDir(e) {
-    const r = win.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    
-    if (y > r.height - RESIZE_EDGE) {
-      if (x > r.width - RESIZE_EDGE) return 'se';
-      if (x < RESIZE_EDGE) return 'sw';
+    if (offsetY <= DRAG_HEIGHT) {
+      box.style.cursor = 'grab';
+    } else if (checkBottomRight(e)) {
+      box.style.cursor = 'nwse-resize';
+    } else {
+      box.style.cursor = 'default';
     }
-    return '';
-  }
+  });
 
-  // Cursor feedback
-  win.addEventListener('pointermove', e=>{
-    if (isPointerDown || dragging || resizing) return;
-    const dir=getResizeDir(e);
-    const cursors={'se':'nwse-resize', 'sw':'nesw-resize'};
-    
-    if (dir) {
-      win.style.cursor=cursors[dir]||'default'; 
+  box.addEventListener('pointerdown', e => {
+    const rect = box.getBoundingClientRect();
+    const offsetY = e.clientY - rect.top;
+
+    document.body.style.userSelect = 'none';
+
+    // Dragging
+    if (offsetY <= DRAG_HEIGHT) {
+      isDragging = true;
+      box.style.cursor = 'grabbing';
+      pointerDownX = e.clientX - rect.left;
+      pointerDownY = e.clientY - rect.top;
       return;
     }
-    
-    const r=win.getBoundingClientRect();
-    if (e.clientY - r.top <= DRAG_HEIGHT) {
-      win.style.cursor='grab';
-    } else {
-      win.style.cursor='default';
+
+    // Resizing - bottom RIGHT corner only
+    if (checkBottomRight(e)) {
+      isResizing = true;
+
+      startLeft = rect.left;
+      startTop = rect.top;
+      startWidth = rect.width;
+      startHeight = rect.height;
+
+      pointerDownX = e.clientX;
+      pointerDownY = e.clientY;
+
+      box.style.cursor = 'nwse-resize';
     }
   });
 
-  win.addEventListener('pointerdown', e=>{
-    if (e.button!==0) return;
-    
-    const rect = win.getBoundingClientRect();
-    const dir = getResizeDir(e);
-    const isDragZone = (e.clientY - rect.top <= DRAG_HEIGHT);
-    
-    if (dir) {
-      resizing=true; resizeDir=dir;
-    } else if (isDragZone) {
-      dragging=true;
-    } else {
-      return; 
-    }
-    
-    isPointerDown = true;
-    win.setPointerCapture(e.pointerId); 
-    e.preventDefault(); 
-  });
+  document.addEventListener('pointermove', e => {
+    // Drag
+    if (isDragging) {
+      let newX = e.clientX - pointerDownX;
+      let newY = e.clientY - pointerDownY;
 
-  document.addEventListener('pointermove', e=>{
-    if (!isPointerDown) return; 
+      newX = Math.max(0, Math.min(newX, window.innerWidth - box.offsetWidth));
+      newY = Math.max(0, Math.min(newY, window.innerHeight - box.offsetHeight));
 
-    // *** ANTI-JUMP / OFFSET FIX: Only runs on the first move ***
-    if (!win.dataset.normalized) {
-      // 1. Normalize position based on where it currently is visually
-      normalizePosition(win); 
-
-      // 2. Calculate offsets using the reliable client position and the new style.left/top
-      if (dragging) {
-        // Correct calculation: Mouse position minus the window's style position
-        grabOffset.x = e.clientX - win.offsetLeft; 
-        grabOffset.y = e.clientY - win.offsetTop;
-        win.style.cursor='grabbing';
-      }
-      if (resizing) {
-        // Recalculate start properties based on the now-normalized position
-        start={startX:e.clientX,startY:e.clientY,startW:win.offsetWidth,
-               startH:win.offsetHeight,startL:win.offsetLeft,startT:win.offsetTop};
-      }
+      box.style.left = newX + 'px';
+      box.style.top = newY + 'px';
     }
 
-    // --- Standard Drag Logic ---
-    if (dragging) {
-      let nx = e.clientX - grabOffset.x;
-      let ny = e.clientY - grabOffset.y;
-      
-      nx = Math.max(0, Math.min(nx, window.innerWidth - win.offsetWidth));
-      ny = Math.max(0, Math.min(ny, window.innerHeight - win.offsetHeight));
-      
-      win.style.left = Math.round(nx) + 'px';
-      win.style.top  = Math.round(ny) + 'px';
-    }
-    
-    // --- Standard Resize Logic ---
-    if (resizing) {
-      const dx = e.clientX - start.startX;
-      const dy = e.clientY - start.startY;
-      
-      let newW=start.startW, newH=start.startH, newL=start.startL, newT=start.startT;
-      
-      if (resizeDir.includes('e')) newW = start.startW + dx;
-      if (resizeDir.includes('w')) {
-        newW = start.startW - dx; 
-        newL = start.startL + dx;
-      }
-      if (resizeDir.includes('s')) newH = start.startH + dy;
-      
-      // --- CONSTRAINTS ---
-      if (newW < MIN_W) {
-        if (resizeDir.includes('w')) { newL = start.startL + (start.startW - MIN_W); }
-        newW = MIN_W;
-      }
-      if (newH < MIN_H) { newH = MIN_H; }
-      if (newL < 0) {
-        if (resizeDir.includes('w')) newW += newL;
-        newL = 0;
-      }
-      if (newL + newW > window.innerWidth) {
-        newW = Math.max(MIN_W, window.innerWidth - newL);
-      }
-      if (newT + newH > window.innerHeight) {
-        newH = Math.max(MIN_H, window.innerHeight - newT);
-      }
-      
-      win.style.width  = Math.round(newW) + 'px';
-      win.style.height = Math.round(newH) + 'px';
-      win.style.left   = Math.round(newL) + 'px';
-      win.style.top    = Math.round(newT) + 'px';
+    // Resize
+    if (isResizing) {
+      const newWidth = Math.max(50, startWidth + (e.clientX - pointerDownX));
+      const newHeight = Math.max(50, startHeight + (e.clientY - pointerDownY));
+
+      box.style.width = newWidth + 'px';
+      box.style.height = newHeight + 'px';
     }
   });
 
-  document.addEventListener('pointerup', e=>{
-    if (isPointerDown) {
-      try { win.releasePointerCapture(e.pointerId); } catch {}
-    }
-    isPointerDown = false;
-    dragging=false; 
-    resizing=false; 
-    resizeDir=''; 
-    win.style.cursor='default';
+  document.addEventListener('pointerup', () => {
+    isDragging = false;
+    isResizing = false;
+    document.body.style.userSelect = '';
   });
-
-  win.addEventListener('dragstart', e=>e.preventDefault());
 });
 </script>
 
 
 
-<!--FIXED SCRIP 17-->
+
+<!--FIXED SCRIP 18-->
 
 
 
