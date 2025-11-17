@@ -1853,8 +1853,8 @@ if (selectedBackground) {
 
 
 <script>
-const DRAG_HEIGHT = 50; // Top draggable
-const RESIZE_MARGIN = 20; // Bottom corner
+const DRAG_HEIGHT = 50;
+const RESIZE_MARGIN = 20;
 
 const divs = [
   document.getElementById('settingsDiv'),
@@ -1868,9 +1868,10 @@ const divs = [
 divs.forEach(box => {
   let isDragging = false;
   let isResizing = false;
-  let resizingCorner = ''; // 'bl' or 'br'
+  let resizingCorner = '';
   let startLeft = 0, startTop = 0, startWidth = 0, startHeight = 0;
   let pointerDownX = 0, pointerDownY = 0;
+  let dragOffsetX = 0, dragOffsetY = 0;
 
   function checkBottomCorner(e) {
     const rect = box.getBoundingClientRect();
@@ -1907,32 +1908,31 @@ divs.forEach(box => {
     box.style.width = rect.width + 'px';
     box.style.height = rect.height + 'px';
 
-    // Drag top
     if (offsetYInDiv <= DRAG_HEIGHT) {
       isDragging = true;
       box.style.cursor = 'grabbing';
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      box.setPointerCapture(e.pointerId);
     }
-    // Resize bottom corners
     else if (corner) {
       isResizing = true;
       resizingCorner = corner;
-
       startLeft = rect.left;
       startTop = rect.top;
       startWidth = rect.width;
       startHeight = rect.height;
-
       pointerDownX = e.clientX;
       pointerDownY = e.clientY;
-
       box.style.cursor = 'nwse-resize';
+      box.setPointerCapture(e.pointerId);
     }
   });
 
   document.addEventListener('pointermove', e => {
     if (isDragging) {
-      let newX = e.clientX - box.offsetWidth / 2;
-      let newY = e.clientY - DRAG_HEIGHT / 2;
+      let newX = e.clientX - dragOffsetX;
+      let newY = e.clientY - dragOffsetY;
       newX = Math.max(0, Math.min(newX, window.innerWidth - box.offsetWidth));
       newY = Math.max(0, Math.min(newY, window.innerHeight - box.offsetHeight));
       box.style.left = newX + 'px';
@@ -1944,12 +1944,15 @@ divs.forEach(box => {
       let newHeight = startHeight;
       let newLeft = startLeft;
 
+      const deltaX = e.clientX - pointerDownX;
+      const deltaY = e.clientY - pointerDownY;
+
       if (resizingCorner === 'br') {
-        newWidth = Math.max(50, startWidth + (e.clientX - pointerDownX));
-        newHeight = Math.max(50, startHeight + (e.clientY - pointerDownY));
+        newWidth = Math.max(50, startWidth + deltaX);
+        newHeight = Math.max(50, startHeight + deltaY);
       } else if (resizingCorner === 'bl') {
-        newWidth = Math.max(50, startWidth - (e.clientX - pointerDownX));
-        newHeight = Math.max(50, startHeight + (e.clientY - pointerDownY));
+        newWidth = Math.max(50, startWidth - deltaX);
+        newHeight = Math.max(50, startHeight + deltaY);
         newLeft = startLeft + (startWidth - newWidth);
       }
 
@@ -1959,7 +1962,10 @@ divs.forEach(box => {
     }
   });
 
-  document.addEventListener('pointerup', () => {
+  document.addEventListener('pointerup', (e) => {
+    if (isDragging || isResizing) {
+      box.releasePointerCapture(e.pointerId);
+    }
     isDragging = false;
     isResizing = false;
     resizingCorner = '';
@@ -1968,7 +1974,7 @@ divs.forEach(box => {
 });
 </script>
 
-
+<!--FIXED SCRIPT-->
 
 
 
