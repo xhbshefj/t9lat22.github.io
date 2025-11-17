@@ -1854,7 +1854,7 @@ if (selectedBackground) {
 
 <script>
 const DRAG_HEIGHT = 50;
-const RESIZE_EDGE = 12; // How many pixels to count as the "corner"
+const RESIZE_EDGE = 12; // The pixel size of the corner hot-spot
 const MIN_W = 180;
 const MIN_H = 120;
 
@@ -1877,13 +1877,9 @@ function parseTranslate(transform) {
   return [0,0];
 }
 
-// *** THIS IS THE ANTI-JUMP FIX ***
-// This function runs ONCE on the first click to convert
-// your CSS centering (inset, margin) into a permanent left/top position.
+// *** THIS IS THE ANTI-JUMP FUNCTION ***
+// It runs ONLY on the first mouse-move of a drag/resize
 function normalizePosition(win) {
-  // If we already fixed this window, do nothing.
-  if (win.dataset.normalized) return; 
-
   const cs = getComputedStyle(win);
   const rect = win.getBoundingClientRect();
   const [tx,ty] = parseTranslate(cs.transform);
@@ -1891,8 +1887,8 @@ function normalizePosition(win) {
   // Calculate the exact pixel position
   win.style.left = Math.round(rect.left + tx + window.scrollX) + 'px';
   win.style.top  = Math.round(rect.top + ty + window.scrollY) + 'px';
-  win.style.width = rect.width + 'px'; // Lock width
-  win.style.height = rect.height + 'px'; // Lock height
+  win.style.width = rect.width + 'px';
+  win.style.height = rect.height + 'px';
 
   // Clear all conflicting CSS
   win.style.inset = 'auto';
@@ -1900,14 +1896,14 @@ function normalizePosition(win) {
   win.style.transform = 'none';
   win.style.position = 'fixed'; 
   
-  // Mark as normalized so this never runs again
   win.dataset.normalized = 'true';
 }
 
 windows.forEach(win => {
   let dragging=false, resizing=false, resizeDir='';
-  let grabOffset={x:0,y:0};
   let start={};
+  let grabOffset={x:0,y:0};
+  let isPointerDown = false; // Flag for tracking the click
 
   // *** RESIZE FIX: Only allow resizing on the bottom corners (SW and SE) ***
   function getResizeDir(e) {
@@ -1922,15 +1918,13 @@ windows.forEach(win => {
       // Check for bottom-left (SW)
       if (x < RESIZE_EDGE) return 'sw';
     }
-    // If not in a corner, return empty
-    return '';
+    return ''; // Not in a corner
   }
 
   // Cursor feedback
   win.addEventListener('pointermove', e=>{
-    if (dragging||resizing) return;
+    if (isPointerDown || dragging || resizing) return;
     const dir=getResizeDir(e);
-    // Updated cursor map for corners only
     const cursors={'se':'nwse-resize', 'sw':'nesw-resize'};
     
     if (dir) {
@@ -1939,7 +1933,6 @@ windows.forEach(win => {
     }
     
     const r=win.getBoundingClientRect();
-    // Draggable top bar
     if (e.clientY - r.top <= DRAG_HEIGHT) {
       win.style.cursor='grab';
     } else {
@@ -1950,42 +1943,47 @@ windows.forEach(win => {
   win.addEventListener('pointerdown', e=>{
     if (e.button!==0) return;
     
-    // *** ANTI-JUMP FIX RUNS HERE ***
-    // This runs ONCE on the first click (drag, resize, or tap)
-    // to lock the window's position and prevent the jump.
-    normalizePosition(win); 
-
     const rect = win.getBoundingClientRect();
     const dir = getResizeDir(e);
     const isDragZone = (e.clientY - rect.top <= DRAG_HEIGHT);
     
-    // If not clicking a drag or resize zone, do nothing.
-    if (!dir && !isDragZone) {
-      return; 
-    }
-    
+    // Check if it's a drag or resize, otherwise do nothing
     if (dir) {
-      // START RESIZING
       resizing=true; resizeDir=dir;
-      start={startX:e.clientX,startY:e.clientY,startW:win.offsetWidth,
-             startH:win.offsetHeight,startL:win.offsetLeft,startT:win.offsetTop};
-      win.setPointerCapture(e.pointerId); 
-      e.preventDefault(); 
-      return;
+    } else if (isDragZone) {
+      dragging=true;
+    } else {
+      return; // This is a tap in the middle. DO NOTHING.
     }
     
-    if (isDragZone) {
-      // START DRAGGING
-      dragging=true;
-      grabOffset.x=e.clientX - win.offsetLeft;
-      grabOffset.y=e.clientY - win.offsetTop;
-      win.setPointerCapture(e.pointerId);
-      win.style.cursor='grabbing';
-      e.preventDefault();
-    }
+    isPointerDown = true;
+    win.setPointerCapture(e.pointerId); 
+    e.preventDefault(); 
   });
 
   document.addEventListener('pointermove', e=>{
+    // Only run if we are actively dragging/resizing
+    if (!isPointerDown) return; 
+
+    // *** THE REAL ANTI-JUMP FIX ***
+    // On the very first pixel of movement, we normalize the position.
+    // This stops the jump and fixes the drag-start glitch.
+    if (!win.dataset.normalized) {
+      normalizePosition(win); 
+
+      // Now that it's normalized, calculate the *correct* start offsets
+      if (dragging) {
+        grabOffset.x=e.clientX - win.offsetLeft;
+        grabOffset.y=e.clientY - win.offsetTop;
+        win.style.cursor='grabbing';
+      }
+      if (resizing) {
+        start={startX:e.clientX,startY:e.clientY,startW:win.offsetWidth,
+               startH:win.offsetHeight,startL:win.offsetLeft,startT:win.offsetTop};
+      }
+    }
+
+    // --- Standard Drag Logic ---
     if (dragging) {
       let nx = e.clientX - grabOffset.x;
       let ny = e.clientY - grabOffset.y;
@@ -1997,13 +1995,13 @@ windows.forEach(win => {
       win.style.top  = Math.round(ny) + 'px';
     }
     
+    // --- Standard Resize Logic ---
     if (resizing) {
       const dx = e.clientX - start.startX;
       const dy = e.clientY - start.startY;
       
       let newW=start.startW, newH=start.startH, newL=start.startL, newT=start.startT;
       
-      // These checks work for 'se' and 'sw'
       if (resizeDir.includes('e')) newW = start.startW + dx;
       if (resizeDir.includes('w')) {
         newW = start.startW - dx; 
@@ -2012,14 +2010,11 @@ windows.forEach(win => {
       if (resizeDir.includes('s')) newH = start.startH + dy;
       
       // --- CONSTRAINTS ---
-      
       if (newW < MIN_W) {
         if (resizeDir.includes('w')) { newL = start.startL + (start.startW - MIN_W); }
         newW = MIN_W;
       }
-      
       if (newH < MIN_H) { newH = MIN_H; }
-      
       if (newL < 0) {
         if (resizeDir.includes('w')) newW += newL;
         newL = 0;
@@ -2027,7 +2022,6 @@ windows.forEach(win => {
       if (newL + newW > window.innerWidth) {
         newW = Math.max(MIN_W, window.innerWidth - newL);
       }
-      
       if (newT + newH > window.innerHeight) {
         newH = Math.max(MIN_H, window.innerHeight - newT);
       }
@@ -2040,9 +2034,11 @@ windows.forEach(win => {
   });
 
   document.addEventListener('pointerup', e=>{
-    if (dragging || resizing) {
+    if (isPointerDown) {
       try { win.releasePointerCapture(e.pointerId); } catch {}
     }
+    // Reset all flags
+    isPointerDown = false;
     dragging=false; 
     resizing=false; 
     resizeDir=''; 
@@ -2055,7 +2051,7 @@ windows.forEach(win => {
 
 
 
-<!--FIXED SCRIP 15-->
+<!--FIXED SCRIP 16-->
 
 
 
