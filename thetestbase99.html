@@ -1877,33 +1877,37 @@ function parseTranslate(transform) {
   return [0,0];
 }
 
-// Function to stabilize the position and clear conflicting CSS
-function stabilizePosition(win) {
-    const currentRect = win.getBoundingClientRect();
-    const cs = getComputedStyle(win);
-    const [tx, ty] = parseTranslate(cs.transform);
+// *** THIS IS THE KEY FIX ***
+// This function converts your CSS centering (inset, margin, transform)
+// into a permanent left/top position, but only when it's first called.
+function normalizePosition(win) {
+  const cs = getComputedStyle(win);
+  if (win.dataset.normalized) return; // Already done
 
-    const absoluteX = currentRect.left + tx + window.scrollX;
-    const absoluteY = currentRect.top + ty + window.scrollY;
-    
-    win.style.position = 'fixed'; 
-    win.style.left = Math.round(absoluteX) + 'px';
-    win.style.top  = Math.round(absoluteY) + 'px';
-    win.style.width = currentRect.width + 'px';
-    win.style.height = currentRect.height + 'px';
+  const rect = win.getBoundingClientRect();
+  const [tx,ty] = parseTranslate(cs.transform);
+  
+  win.style.left = Math.round(rect.left + tx + window.scrollX) + 'px';
+  win.style.top  = Math.round(rect.top + ty + window.scrollY) + 'px';
+  win.style.width = rect.width + 'px'; // Lock width
+  win.style.height = rect.height + 'px'; // Lock height
 
-    win.style.inset = 'auto'; 
-    win.style.margin = '0'; 
-    win.style.transform = 'none';
+  // Clear all conflicting CSS
+  win.style.inset = 'auto';
+  win.style.margin = '0';
+  win.style.transform = 'none';
+  win.style.position = 'fixed'; // Ensure it's fixed
+  
+  // Mark as normalized so this never runs again
+  win.dataset.normalized = 'true';
 }
-
 
 windows.forEach(win => {
   let dragging=false, resizing=false, resizeDir='';
   let grabOffset={x:0,y:0};
   let start={};
 
-  // Resize only on bottom (S, SE, SW)
+  // Only allow resizing on the bottom edge and bottom corners (S, SE, SW)
   function getResizeDir(e) {
     const r = win.getBoundingClientRect();
     const x = e.clientX - r.left;
@@ -1940,26 +1944,20 @@ windows.forEach(win => {
   win.addEventListener('pointerdown', e=>{
     if (e.button!==0) return;
     
-    // *** THE REAL FIX IS HERE ***
-    // We must stabilize the position on the FIRST click, no matter where it is.
-    // This runs ONCE per window to lock it from its CSS-centered position.
-    if (!win.dataset.stabilized) {
-      stabilizePosition(win); 
-      win.dataset.stabilized = 'true';
-    }
-    
+    // *** THE ANTI-JUMP FIX ***
+    // This runs ONCE on the first click (drag, resize, or tap)
+    // to lock the window's position and prevent the jump.
+    normalizePosition(win); 
+
     const rect = win.getBoundingClientRect();
     const dir = getResizeDir(e);
     const isDragZone = (e.clientY - rect.top <= DRAG_HEIGHT);
     
-    // Now, if it's not a drag or resize click, we can safely return.
+    // If not clicking a drag or resize zone, do nothing.
     if (!dir && !isDragZone) {
       return; 
     }
     
-    // Re-run stabilize just to be safe if a resize/drag happened
-    stabilizePosition(win); 
-
     if (dir) {
       // START RESIZING
       resizing=true; resizeDir=dir;
@@ -2050,7 +2048,7 @@ windows.forEach(win => {
 
 
 
-<!--FIXED SCRIP 13-->
+<!--FIXED SCRIP 14-->
 
 
 
