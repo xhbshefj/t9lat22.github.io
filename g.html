@@ -18,7 +18,14 @@
     color: white;
     position: relative;
     overflow-x: hidden;
+    overflow: auto;
+
   }
+  body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 
   body::before {
     content: '';
