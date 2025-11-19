@@ -1948,6 +1948,7 @@ if (selectedBackground) {
     const box = document.getElementById('settingsDiv');
     let isResizing = false;
     let startX, startY;
+    let startWidth, startHeight;
 
     box.addEventListener('mousedown', function(e) {
       const rect = box.getBoundingClientRect();
@@ -1959,6 +1960,8 @@ if (selectedBackground) {
         isResizing = true;
         startX = e.clientX;
         startY = e.clientY;
+        startWidth = box.offsetWidth;
+        startHeight = box.offsetHeight;
         box.style.cursor = 'nwse-resize';
         e.preventDefault();
       }
@@ -1983,16 +1986,14 @@ if (selectedBackground) {
       if (isResizing) {
         const deltaX = e.clientX - startX;
         const deltaY = e.clientY - startY;
-        const newWidth = box.offsetWidth + deltaX;
-        const newHeight = box.offsetHeight + deltaY;
+        const newWidth = startWidth + deltaX;
+        const newHeight = startHeight + deltaY;
         
         if (newWidth > 300) {
           box.style.width = newWidth + 'px';
-          startX = e.clientX;
         }
         if (newHeight > 200) {
           box.style.height = newHeight + 'px';
-          startY = e.clientY;
         }
       }
     });
