@@ -1866,11 +1866,12 @@ if (selectedBackground) {
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
       
-      // Check if clicking in bottom-right 10px corner for resize
-      if (mouseX > rect.width - 10 && mouseY > rect.height - 10) {
+      // Check if clicking in bottom-right 15px corner for resize
+      if (mouseX > rect.width - 15 && mouseY > rect.height - 15) {
         isResizing = true;
         startX = e.clientX;
         startY = e.clientY;
+        box.style.cursor = 'nwse-resize';
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -1886,6 +1887,23 @@ if (selectedBackground) {
       startTop = box.offsetTop;
       box.style.cursor = 'move';
       e.preventDefault();
+    });
+
+    // Change cursor when hovering over resize corner
+    box.addEventListener('mousemove', function(e) {
+      if (isDragging || isResizing) return;
+      
+      const rect = box.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      if (mouseX > rect.width - 15 && mouseY > rect.height - 15) {
+        box.style.cursor = 'nwse-resize';
+      } else if (mouseY <= 30) {
+        box.style.cursor = 'move';
+      } else {
+        box.style.cursor = 'default';
+      }
     });
 
     document.addEventListener('mousemove', function(e) {
@@ -1908,6 +1926,7 @@ if (selectedBackground) {
         box.style.left = newLeft + 'px';
         box.style.top = newTop + 'px';
         box.style.margin = '0';
+        box.style.inset = 'auto';
       }
       
       if (isResizing) {
@@ -1937,7 +1956,7 @@ if (selectedBackground) {
   // Initialize when settings div is shown
   makeSettingsDraggableResizable();
 </script>
-<!--FIXED SCRIP 21--> 
+<!--FIXED SCRIP 22--> 
 
 
 
