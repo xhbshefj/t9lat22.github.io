@@ -1853,7 +1853,7 @@ if (selectedBackground) {
 
 
 <script>
-  (function() {
+(function() {
   // --- State variables for the active resize operation ---
   let isResizing = false;
   let activeElement = null;
@@ -1878,8 +1878,15 @@ if (selectedBackground) {
         activeElement = element; // Set this as the element being resized
         startX = e.clientX;
         startY = e.clientY;
-        startWidth = element.offsetWidth;
-        startHeight = element.offsetHeight;
+
+        // --- THIS IS THE FIX ---
+        // We read the computed style's width/height, not offsetWidth/Height.
+        // This avoids issues with padding, borders, and box-sizing.
+        const computedStyle = getComputedStyle(element);
+        startWidth = parseFloat(computedStyle.width);
+        startHeight = parseFloat(computedStyle.height);
+        // --- END OF FIX ---
+        
         element.style.cursor = 'nwse-resize';
         e.preventDefault(); // Prevent text selection, etc.
       }
@@ -1911,6 +1918,9 @@ if (selectedBackground) {
     if (!isResizing || !activeElement) {
       return;
     }
+    
+    // Prevent default drag behavior while resizing
+    e.preventDefault(); 
 
     const deltaX = e.clientX - startX;
     const deltaY = e.clientY - startY;
