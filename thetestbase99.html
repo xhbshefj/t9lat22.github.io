@@ -221,6 +221,26 @@ box-shadow: 2px #141414;
       animation: popIn2 0.5s ease-out forwards;
 
   }
+     #customDiv {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+background-color: #1b1b1bbd;
+border: 1px solid rgb(34, 34, 34);   
+    color: white;
+    inset: 0;
+    margin:auto;
+    position: fixed;
+    z-index: 1000;
+    border-radius:30px; 
+    width:85%;
+    height: 77%; 
+    overflow-x: hidden;
+    overflow-y: auto;
+box-shadow: 2px #141414;
+      animation: popIn2 0.5s ease-out forwards;
+
+  }
     #t9Div {
     display: none;
     margin-top: 20px;
@@ -589,6 +609,9 @@ border: 1px solid rgba(255, 255, 255, 0.15);
     <a onclick="Chat()">
     <img src="chat2.png">
   </a>
+  <a onclick="custom()">
+    <img src="add.png">
+  </a>
   
 
 
@@ -756,6 +779,31 @@ backdrop-filter: blur(7px);
       animation: popIn 0.5s ease-out forwards;
 
   }
+  </style>
+ 
+           
+</div>
+
+<div id="customDiv">
+  <button class="close-btn" onclick="document.getElementById('customDiv').style.display = 'none';">●</button>
+        <h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);" >App maker</h3>
+
+
+
+ 
+<iframe class="frame4" src="appmaker.html"></iframe>
+  <style>
+    .frame4{
+      width:100%;
+      height:95%;
+      bottom:10px;
+      position: absolute;
+      border:none;
+      border-radius:0px 0px 20px 20px;
+      left: 0;
+      bottom: 0;
+    }
+   
   </style>
  
            
@@ -1597,6 +1645,13 @@ backdrop-filter: blur(7px);
 <script>
   function s(){
     const div = document.getElementById('searchDiv');
+    div.style.display = div.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+
+<script>
+  function custom(){
+    const div = document.getElementById('customDiv');
     div.style.display = div.style.display === 'block' ? 'none' : 'block';
   }
 </script>
