@@ -12,6 +12,7 @@
     background: black;
     font-family: monospace;
     color: #02f50f;
+    transition: background 0.5s;
   }
 
   .terminal {
@@ -57,16 +58,19 @@
 <body>
 <div class="terminal">
   <div class="output" id="output">Welcome! Type "help" for commands.</div>
-  
   <div class="input-line">
     <span class="prompt">user/$></span>
     <input type="text" id="commandBox" placeholder="Type command...">
   </div>
 </div>
 
+<!-- Admin sound -->
+<audio id="adminSound" src="scare.mp3" loop></audio>
+
 <script>
 const output = document.getElementById('output');
 const input = document.getElementById('commandBox');
+const adminSound = document.getElementById('adminSound');
 
 const commands = { 
   help: 'Available commands: google, !browser, !ai, !gms, !admin (Admins only), version',
@@ -77,10 +81,9 @@ const commands = {
   '!xploits': 'Opening xploits...',
   '!apps': 'Opening games...',
   '!ai': 'opening AI......',
-  '!admin': 'opening admin panel...'
+  '!admin': 'DONT LOOK BEHIND YOU!!!!!!!!!!!!'
 };
 
-// Optional redirects
 const redirects = {
   google: 'https://www.google.com',
   devbytes: 'https://www.devbytes.ai',
@@ -88,9 +91,6 @@ const redirects = {
   '!gms': 'g2.html',
   '!ai': '/ai/index.html',
   '!xploits': '/xploits/index.html',
-    '!admin': 'admin.html',
-
-
 };
 
 input.addEventListener('keydown', function(e) {
@@ -98,23 +98,31 @@ input.addEventListener('keydown', function(e) {
     const cmd = input.value.trim().toLowerCase();
     input.value = '';
 
-    // Show the command in output
     output.textContent += `> ${cmd}\n`;
 
     if (commands[cmd]) {
       output.textContent += commands[cmd] + '\n';
-      if (redirects[cmd]) window.location.href = redirects[cmd];
+
+      if (cmd === '!admin') {
+        // Change background and play music
+        document.body.style.backgroundImage = 'url("scare.png")';
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        adminSound.volume = 0.7;
+        adminSound.play().catch(()=>{});
+      }
+
+      if (redirects[cmd] && cmd !== '!admin') {
+        window.location.href = redirects[cmd];
+      }
     } else {
       output.textContent += 'Invalid command!\n';
     }
 
-    // Scroll to bottom
     output.scrollTop = output.scrollHeight;
   }
 });
 </script>
-
-
-
 </body>
 </html>
