@@ -1340,6 +1340,10 @@ backdrop-filter: blur(7px);
     <option value="classroom">Google Classroom</option>
     <option value="vocab">Vocabulary.com</option>
   </select>
+<label class="label">Upload Custom Background:</label><br>
+<input type="file" id="bgUpload" accept="image/*" style="padding:10px;">
+<button id="removeCustomBG" class="round-btn" style="background:#ff4d4d;color:white;">Remove Custom</button>
+<br><br>
 
 <style>
    .round-btn {
@@ -1363,6 +1367,43 @@ backdrop-filter: blur(7px);
   
 
 
+<script>
+// ---------------- CUSTOM BACKGROUND UPLOADER ---------------- //
+
+document.getElementById("bgUpload").addEventListener("change", (ev) => {
+  const file = ev.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const imgData = e.target.result;
+    localStorage.setItem("customBG", imgData);
+
+    applyCustomBG();
+    alert("Custom background applied! 🎉");
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("removeCustomBG").addEventListener("click", () => {
+  localStorage.removeItem("customBG");
+  location.reload();
+});
+
+function applyCustomBG() {
+  const custom = localStorage.getItem("customBG");
+  if (custom) {
+    document.body.style.backgroundImage = `url(${custom})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundRepeat = "no-repeat";
+  }
+}
+
+// Apply if exists when page loads
+window.addEventListener("DOMContentLoaded", applyCustomBG);
+
+// ------------------------------------------------------------ //
+</script>
 
 <script>
     const presetSelect = document.getElementById("preset");
