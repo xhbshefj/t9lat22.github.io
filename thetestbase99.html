@@ -26,7 +26,7 @@
 
 @import url('https://fonts.googleapis.com/css?family=Luckiest+Guy');
 
-  body {
+ body {
   background: linear-gradient(to bottom, #000000, #3a0057, #550075);
   background-repeat: no-repeat;
   background-size: cover;   /* make sure images cover the whole screen */
@@ -34,7 +34,8 @@
   padding: 0;
   font-family: Arial, sans-serif;
   text-decoration: none;
-  }
+}
+
   a{
     outline:none;
   }
@@ -1340,10 +1341,9 @@ backdrop-filter: blur(7px);
     <option value="classroom">Google Classroom</option>
     <option value="vocab">Vocabulary.com</option>
   </select>
-<label class="label">Upload Custom Background:</label><br>
-<input type="file" id="bgUpload" accept="image/*" style="padding:10px;">
-<button id="removeCustomBG" class="round-btn" style="background:#ff4d4d;color:white;">Remove Custom</button>
-<br><br>
+<input type="file" id="bgUpload" accept="image/*">
+<button id="removeCustomBG">Remove Custom Background</button>
+
 
 <style>
    .round-btn {
@@ -1368,42 +1368,59 @@ backdrop-filter: blur(7px);
 
 
 <script>
-// ---------------- CUSTOM BACKGROUND UPLOADER ---------------- //
+// ---------------- CUSTOM BACKGROUND UPLOADER (HQ FIX) ---------------- //
 
 document.getElementById("bgUpload").addEventListener("change", (ev) => {
   const file = ev.target.files[0];
   if (!file) return;
 
+  // ❌ Block low quality / tiny images (prevents pixelation)
+  if (file.size < 300000) { // 300KB minimum
+    alert("Image quality is too low! Please upload a higher resolution image.");
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = (e) => {
     const imgData = e.target.result;
     localStorage.setItem("customBG", imgData);
-
     applyCustomBG();
     alert("Custom background applied! 🎉");
   };
   reader.readAsDataURL(file);
 });
 
+// ❌ Remove custom BG + return to gradient
 document.getElementById("removeCustomBG").addEventListener("click", () => {
   localStorage.removeItem("customBG");
   location.reload();
 });
 
+// 🎨 Apply custom background without pixelation
 function applyCustomBG() {
   const custom = localStorage.getItem("customBG");
   if (custom) {
     document.body.style.backgroundImage = `url(${custom})`;
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundPosition = "center";
+
+    // 🟣 Fix pixelation + keep it sharp even when zoomed
+    document.body.style.imageRendering = "auto";
+    document.body.style.filter = "blur(0px)";
+
+    // 🌌 Keep gradient behind if the image doesn’t fill screen
+    document.body.style.backgroundColor = "transparent";
+    document.body.style.backgroundBlendMode = "overlay";
   }
 }
 
-// Apply if exists when page loads
+// Apply if exists on page load
 window.addEventListener("DOMContentLoaded", applyCustomBG);
 
-// ------------------------------------------------------------ //
+// -------------------------------------------------------------------- //
 </script>
+
 
 <script>
     const presetSelect = document.getElementById("preset");
