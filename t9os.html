@@ -221,6 +221,26 @@ box-shadow: 2px #141414;
       animation: popIn2 0.5s ease-out forwards;
 
   }
+  #movieDiv {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+background-color: #1b1b1bbd;
+border: 1px solid rgb(34, 34, 34);   
+    color: white;
+    inset: 0;
+    margin:auto;
+    position: fixed;
+    z-index: 1000;
+    border-radius:30px; 
+    width:85%;
+    height: 77%; 
+    overflow-x: hidden;
+    overflow-y: auto;
+box-shadow: 2px #141414;
+      animation: popIn2 0.5s ease-out forwards;
+
+  }
     #t9Div {
     display: none;
     margin-top: 20px;
@@ -578,6 +598,9 @@ border: 1px solid rgba(255, 255, 255, 0.15);
    <a onclick="ai()">
     <img src="ai.png">
   </a>
+  <a onclick="movie()">
+    <img src="movie.png">
+  </a>
   <a onclick="s()">
     <img  src="search.png">
   </a>
@@ -772,6 +795,31 @@ backdrop-filter: blur(7px);
 <iframe class="frame3" src="terminal.html"></iframe>
   <style>
     .frame3{
+      width:100%;
+      height:95%;
+      bottom:10px;
+      position: absolute;
+      border:none;
+      border-radius:0px 0px 20px 20px;
+      left: 0;
+      bottom: 0;
+    }
+   
+  </style>
+ 
+           
+</div>
+
+<div id="movieDiv">
+  <button class="close-btn" onclick="document.getElementById('movieDiv').style.display = 'none';">●</button>
+        <h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);" >Movies</h3>
+
+
+
+ 
+<iframe class="mframe" src="movie.html"></iframe>
+  <style>
+    .mframe{
       width:100%;
       height:95%;
       bottom:10px;
@@ -1571,6 +1619,12 @@ backdrop-filter: blur(7px);
 <script>
   function settings(){
     const div = document.getElementById('settingsDiv');
+    div.style.display = div.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+<script>
+  function movie(){
+    const div = document.getElementById('movieDiv');
     div.style.display = div.style.display === 'block' ? 'none' : 'block';
   }
 </script>
