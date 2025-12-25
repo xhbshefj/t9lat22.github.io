@@ -1925,130 +1925,59 @@ if (selectedBackground) {
 
 <script>
 const win = document.getElementById("hiddenDiv");
-let isPositioned = false;
+const resizer = win.querySelector(".resizer");
 
-// GLOBAL STATE
-let globalDragging = false;
-let globalResizing = false;
-let startX = 0, startY = 0, startWidth = 0, startHeight = 0, startLeft = 0, startTop = 0;
+let isResizing = false;
+let startX = 0, startY = 0;
+let startWidth = 0, startHeight = 0;
+let startLeft = 0, startTop = 0;
 
-/* ---------- WATCHER ---------- */
-const watcher = new MutationObserver(() => {
-  if (getComputedStyle(win).display !== "none" && !isPositioned) {
-    isPositioned = true;
-    
-    requestAnimationFrame(() => {
-      const rect = win.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+// Start resizing when mousedown on the handle
+resizer.addEventListener("mousedown", e => {
+  e.preventDefault();
+  e.stopPropagation();
 
-      win.style.top = (rect.top + scrollTop) + "px";
-      win.style.left = (rect.left + scrollLeft) + "px";
-      win.style.transform = "none";
-      win.style.position = "absolute";
-      win.style.margin = "0";
-      win.style.width = rect.width + "px";
-      win.style.height = rect.height + "px";
+  isResizing = true;
 
-      enableDrag();
-      enableResize();
-    });
-  }
+  startX = e.clientX;
+  startY = e.clientY;
+  startWidth = win.offsetWidth;
+  startHeight = win.offsetHeight;
+  startLeft = parseInt(win.style.left) || 0;
+  startTop = parseInt(win.style.top) || 0;
+
+  document.body.style.userSelect = "none"; // prevent text selection
 });
-watcher.observe(win, { attributes: true, attributeFilter: ["style", "class"] });
 
-/* ---------- DRAG ---------- */
-function enableDrag() {
-  win.addEventListener("mousedown", function(e) {
-    if (e.target.classList.contains("resizer") || ["INPUT","TEXTAREA","SELECT"].includes(e.target.tagName)) return;
-    e.preventDefault();
-    globalDragging = true;
+// Global mousemove for resizing
+document.addEventListener("mousemove", e => {
+  if (!isResizing) return;
 
-    startX = e.clientX;
-    startY = e.clientY;
-    startLeft = parseInt(win.style.left) || 0;
-    startTop = parseInt(win.style.top) || 0;
+  const deltaX = e.clientX - startX;
+  const deltaY = e.clientY - startY;
 
-    win.style.cursor = "move";
-    document.body.style.userSelect = "none";
-  });
-}
+  // Calculate new size and keep in viewport
+  let newWidth  = Math.max(100, Math.min(startWidth + deltaX, window.innerWidth - startLeft));
+  let newHeight = Math.max(100, Math.min(startHeight + deltaY, window.innerHeight - startTop));
 
-/* ---------- RESIZE ---------- */
-function enableResize() {
-  let rz = win.querySelector(".resizer");
-  if (!rz) {
-    rz = document.createElement("div");
-    rz.className = "resizer";
-    rz.style.cssText = "position:absolute;right:0;bottom:0;width:15px;height:15px;cursor:nwse-resize;background:rgba(0,0,0,0.1);z-index:100;";
-    win.appendChild(rz);
-  }
+  win.style.width = newWidth + "px";
+  win.style.height = newHeight + "px";
+});
 
-  rz.addEventListener("mousedown", function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    globalResizing = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startWidth = win.offsetWidth;
-    startHeight = win.offsetHeight;
-    startLeft = parseInt(win.style.left) || 0;
-    startTop = parseInt(win.style.top) || 0;
-
-    document.body.style.userSelect = "none";
-  });
-}
-
-// GLOBAL MOUSEMOVE HANDLER
-document.addEventListener("mousemove", function(e) {
-  if (globalDragging) {
-    let newLeft = startLeft + (e.clientX - startX);
-    let newTop  = startTop  + (e.clientY - startY);
-
-    const maxX = document.documentElement.clientWidth - win.offsetWidth;
-    const maxY = document.documentElement.clientHeight - win.offsetHeight;
-
-    win.style.left = Math.max(0, Math.min(newLeft, maxX)) + "px";
-    win.style.top  = Math.max(0, Math.min(newTop, maxY)) + "px";
-  }
-
-  if (globalResizing) {
-    let newWidth  = startWidth + (e.clientX - startX);
-    let newHeight = startHeight + (e.clientY - startY);
-
-    const maxWidth  = document.documentElement.clientWidth - startLeft;
-    const maxHeight = document.documentElement.clientHeight - startTop;
-
-    win.style.width  = Math.max(100, Math.min(newWidth, maxWidth)) + "px";
-    win.style.height = Math.max(100, Math.min(newHeight, maxHeight)) + "px";
+// Stop resizing on mouseup
+document.addEventListener("mouseup", () => {
+  if (isResizing) {
+    isResizing = false;
+    document.body.style.userSelect = ""; // reset
   }
 });
 
-// GLOBAL MOUSEUP HANDLER
-document.addEventListener("mouseup", function() {
-  globalDragging = false;
-  globalResizing = false;
-  win.style.cursor = "";
+// Safety: stop resizing if window loses focus
+window.addEventListener("blur", () => {
+  isResizing = false;
   document.body.style.userSelect = "";
 });
 
-// WINDOW RESIZE SAFETY
-window.addEventListener("resize", () => {
-  if (!isPositioned) return;
-
-  requestAnimationFrame(() => {
-    const rect = win.getBoundingClientRect();
-    const maxX = document.documentElement.clientWidth - rect.width;
-    const maxY = document.documentElement.clientHeight - rect.height;
-
-    let left = parseInt(win.style.left) || 0;
-    let top = parseInt(win.style.top) || 0;
-
-    if (left > maxX) win.style.left = Math.max(0, maxX) + "px";
-    if (top  > maxY) win.style.top  = Math.max(0, maxY) + "px";
-  });
-});
 </script>
 <style>
    .resizer {
