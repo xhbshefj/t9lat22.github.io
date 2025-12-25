@@ -1925,17 +1925,11 @@ if (selectedBackground) {
 <script>
 const win = document.getElementById("hiddenDiv");
 
-/* ---------- WAIT UNTIL OPENED ---------- */
-const observer = new MutationObserver(() => {
-  if (win.style.display !== "none") setupWindow();
-});
-observer.observe(win, { attributes: true });
-
-function setupWindow() {
-  observer.disconnect();
-
+/* ---------- WAIT FOR ANIMATION TO FINISH ---------- */
+win.addEventListener("animationend", () => {
   const r = win.getBoundingClientRect();
 
+  // Freeze centered position
   win.style.left = r.left + "px";
   win.style.top = r.top + "px";
   win.style.margin = "0";
@@ -1943,7 +1937,7 @@ function setupWindow() {
 
   enableDrag();
   enableResize();
-}
+}, { once:true });
 
 /* ---------- DRAG ---------- */
 function enableDrag() {
@@ -1952,7 +1946,6 @@ function enableDrag() {
   win.addEventListener("mousedown", e => {
     if (e.target.classList.contains("resizer")) return;
     dragging = true;
-
     sx = e.clientX;
     sy = e.clientY;
     sl = win.offsetLeft;
@@ -1982,7 +1975,7 @@ function enableDrag() {
   }
 }
 
-/* ---------- RESIZER ---------- */
+/* ---------- RESIZE ---------- */
 function enableResize() {
   const resizer = document.createElement("div");
   resizer.className = "resizer";
@@ -2033,6 +2026,7 @@ function enableResize() {
   }
 }
 </script>
+
 
 
 
