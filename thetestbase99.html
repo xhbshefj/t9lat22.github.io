@@ -1923,7 +1923,112 @@ if (selectedBackground) {
 </style>
 
 <script>
-  /* ---------- RESIZE ---------- */
+const win = document.getElementById("hiddenDiv");
+let isPositioned = false;
+let dragListeners = {};
+let resizeListeners = {};
+
+/* When the div becomes visible, freeze its centered position */
+const watcher = new MutationObserver(() => {
+  if (getComputedStyle(win).display !== "none" && !isPositioned) {
+    isPositioned = true;
+    
+    requestAnimationFrame(() => {
+      const rect = win.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+      // 1. Use absolute positioning
+      win.style.top = (rect.top + scrollTop) + "px";
+      win.style.left = (rect.left + scrollLeft) + "px";
+      
+      // 2. Remove CSS centering transform
+      win.style.transform = "none";
+      
+      // 3. Set positioning
+      win.style.position = "absolute";
+      win.style.margin = "0";
+      
+      // 4. Ensure dimensions are preserved
+      win.style.width = rect.width + "px";
+      win.style.height = rect.height + "px";
+
+      enableDrag();
+      enableResize();
+    });
+  }
+});
+watcher.observe(win, { attributes: true, attributeFilter: ["style", "class"] });
+
+/* ---------- DRAG ---------- */
+function enableDrag() {
+  // Remove any existing listeners first
+  if (dragListeners.mousedown) {
+    win.removeEventListener("mousedown", dragListeners.mousedown);
+  }
+  
+  dragListeners.mousedown = function(e) {
+    // Prevent dragging if clicking inputs or the resizer
+    if (e.target.classList.contains("resizer") || 
+        e.target.tagName === "INPUT" || 
+        e.target.tagName === "TEXTAREA" ||
+        e.target.tagName === "SELECT") {
+      return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const startX = e.clientX; 
+    const startY = e.clientY;
+    const startLeft = parseInt(win.style.left) || 0;
+    const startTop = parseInt(win.style.top) || 0;
+    
+    // Add styles for better dragging experience
+    win.style.userSelect = "none";
+    win.style.cursor = "move";
+    
+    // Define mousemove handler
+    const onMouseMove = function(e) {
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      
+      let newLeft = startLeft + deltaX;
+      let newTop = startTop + deltaY;
+
+      // Bounds checking
+      const maxX = document.documentElement.clientWidth - win.offsetWidth;
+      const maxY = document.documentElement.clientHeight - win.offsetHeight;
+      
+      newLeft = Math.max(0, Math.min(newLeft, maxX));
+      newTop = Math.max(0, Math.min(newTop, maxY));
+
+      win.style.left = newLeft + "px";
+      win.style.top = newTop + "px";
+    };
+    
+    // Define mouseup handler
+    const onMouseUp = function() {
+      // Remove temporary event listeners
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mouseup", onMouseUp);
+      
+      // Reset styles
+      win.style.userSelect = "";
+      win.style.cursor = "";
+    };
+    
+    // Add listeners
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mouseup", onMouseUp); // Safety catch
+  };
+  
+  win.addEventListener("mousedown", dragListeners.mousedown);
+}
+
+/* ---------- RESIZE ---------- */
 function enableResize() {
   // Remove existing resizer if any
   const existingResizer = win.querySelector('.resizer');
@@ -2011,6 +2116,38 @@ function enableResize() {
   
   rz.addEventListener("mousedown", resizeListeners.mousedown);
 }
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  if (!isPositioned) return;
+  
+  requestAnimationFrame(() => {
+    const rect = win.getBoundingClientRect();
+    const maxX = document.documentElement.clientWidth - rect.width;
+    const maxY = document.documentElement.clientHeight - rect.height;
+    
+    let left = parseInt(win.style.left) || 0;
+    let top = parseInt(win.style.top) || 0;
+    
+    if (left > maxX) {
+      win.style.left = Math.max(0, maxX) + "px";
+    }
+    if (top > maxY) {
+      win.style.top = Math.max(0, maxY) + "px";
+    }
+  });
+});
+
+// Add global mouseup handler as ultimate safety measure
+window.addEventListener('mouseup', function globalMouseUp(e) {
+  // If we're clicking outside while dragging/resizing, force stop
+  if (!win.contains(e.target)) {
+    // Reset all potential dragging states
+    document.body.style.userSelect = "";
+    win.style.userSelect = "";
+    win.style.cursor = "";
+  }
+});
 </script>
 
 
