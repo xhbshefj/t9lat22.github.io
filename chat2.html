@@ -47,11 +47,6 @@
     .modal button{width:100%;padding:14px;background:linear-gradient(135deg, #4e8cff 0%, #3a6fd9 100%);border:none;border-radius:10px;color:#fff;font-weight:600;cursor:pointer;font-size:1rem;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(78,140,255,0.3)}
     .modal button:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(78,140,255,0.4)}
     .modal button:active{transform:translateY(0)}
-    .room-input{width:100%;padding:10px 14px;margin-top:10px;border-radius:8px;border:1px solid rgba(100,150,255,0.2);background:rgba(20,30,55,0.8);color:#e8eaf6;font-size:.9rem;transition:all 0.2s ease}
-    .room-input:focus{outline:none;border-color:rgba(100,150,255,0.5);background:rgba(20,30,55,1)}
-    .room-input::placeholder{color:rgba(200,210,255,0.4)}
-    .room-btn{width:100%;margin-top:10px;padding:10px;border-radius:8px;background:linear-gradient(135deg, #4e8cff 0%, #3a6fd9 100%);border:none;color:#fff;font-weight:600;cursor:pointer;transition:all 0.2s ease}
-    .room-btn:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(78,140,255,0.3)}
   </style>
 </head>
 <body>
@@ -66,30 +61,11 @@
   <div class="sidebar">
     <div class="section-title">Main</div>
     <div id="publicRoomBtn" class="sidebar-item active">🌍 Public</div>
-
-    <div class="section-title">Rooms</div>
-    <div id="roomsList"></div>
-
-    <div class="section-title">Actions</div>
-    <div id="createBtn" class="sidebar-item">➕ Create Room</div>
-    <div id="joinBtn" class="sidebar-item">🔍 Join Room</div>
-
-    <div id="createBox" class="hidden">
-      <input id="createInput" class="room-input" placeholder="Room name" />
-      <button id="doCreate" class="room-btn">Create & Join</button>
-    </div>
-
-    <div id="joinBox" class="hidden">
-      <input id="joinInput" class="room-input" placeholder="Enter room name to join" />
-      <button id="doJoin" class="room-btn">Join</button>
-      <div class="small" style="margin-top:10px">If room doesn't exist, joining will create it for you but only you will see it until others join.</div>
-    </div>
   </div>
 
   <div class="chat-area">
     <div class="chat-header" id="roomTitle">Public Chat</div>
     <div id="messages" class="messages"><div style="text-align:center;color:#7ea8ff;opacity:0.7">Welcome to Public Chat</div></div>
-
     <div class="input-bar">
       <input id="msgInput" placeholder="Type a message…" autocomplete="off" />
       <button id="sendBtn">Send</button>
@@ -98,7 +74,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, off } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
@@ -110,6 +86,7 @@
       appId: "1:930534704832:web:c154890c3b5f36736f8f25",
       measurementId: "G-STPKYT658F"
     };
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
@@ -117,197 +94,79 @@
     const msgInput = document.getElementById('msgInput');
     const sendBtn = document.getElementById('sendBtn');
     const publicRoomBtn = document.getElementById('publicRoomBtn');
-    const roomsList = document.getElementById('roomsList');
-    const createBtn = document.getElementById('createBtn');
-    const joinBtn = document.getElementById('joinBtn');
-    const createBox = document.getElementById('createBox');
-    const joinBox = document.getElementById('joinBox');
-    const createInput = document.getElementById('createInput');
-    const joinInput = document.getElementById('joinInput');
-    const doCreate = document.getElementById('doCreate');
-    const doJoin = document.getElementById('doJoin');
     const roomTitle = document.getElementById('roomTitle');
     const nameModal = document.getElementById('nameModal');
     const nameInput = document.getElementById('nameInput');
     const nameSubmit = document.getElementById('nameSubmit');
 
+    // ===== User ID =====
+    const ID_KEY = "numericUserID";
+    function generateNumericID() {
+      const timestamp = Date.now().toString().slice(-6);
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4,'0');
+      return random + timestamp;
+    }
+    let myID = localStorage.getItem(ID_KEY);
+    if(!myID){
+      myID = generateNumericID();
+      localStorage.setItem(ID_KEY, myID);
+    }
+
     let username = "Anonymous";
-    let currentRoom = "public";
-    let myRooms = [];
-    let activeChildCallback = null;
-    let activeRefPath = null;
-
-    function sanitizeRoom(name){
-      return name.trim().toLowerCase();
-    }
-
-    function clearMessages(){
-      messagesEl.innerHTML = '';
-    }
-
-    function appendMessage(payload){
-      const div = document.createElement('div');
-      div.className = 'msg' + ((payload.name||'').toLowerCase() === username.toLowerCase() ? ' own' : '');
-      div.innerHTML = `<div class="msg-name">${escapeHtml(payload.name||'Anon')}</div><div class="msg-bubble">${escapeHtml(payload.text)}</div>`;
-      messagesEl.appendChild(div);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
+    const currentRoom = "public";
 
     function escapeHtml(s){
       return (s+'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
     }
 
-    function detachActiveListener(){
-      if (activeChildCallback && activeRefPath){
-        try {
-          off(ref(db, activeRefPath), 'child_added', activeChildCallback);
-        } catch(e){}
-        activeChildCallback = null;
-        activeRefPath = null;
-      }
-    }
-
-    function attachListenerForRoom(room){
-      detachActiveListener();
-      clearMessages();
-
-      const path = "messages/" + room;
-      const r = ref(db, path);
-
-      const cb = (snap) => {
-        const m = snap.val();
-        if (!m) return;
-        appendMessage(m);
-      };
-
-      onChildAdded(r, cb);
-      activeChildCallback = cb;
-      activeRefPath = path;
-    }
-
-    function setActiveSidebarRoomEl(room){
-      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-      if (room === 'public'){
-        publicRoomBtn.classList.add('active');
-      } else {
-        const children = Array.from(roomsList.children);
-        const found = children.find(c => c.dataset && c.dataset.room === room);
-        if (found) found.classList.add('active');
-      }
-    }
-
-    function addRoomToSidebar(room){
-      if (myRooms.includes(room)) return;
-      myRooms.push(room);
-
+    function appendMessage(payload){
       const div = document.createElement('div');
-      div.className = 'sidebar-item';
-      div.textContent = '🟣 ' + room;
-      div.dataset.room = room;
-      div.onclick = () => {
-        joinRoomByName(room);
-      };
-      roomsList.appendChild(div);
+      div.className = 'msg' + ((payload.id === myID) ? ' own' : '');
+      const displayName = payload.name ? `${payload.name} (${payload.id})` : 'Anon';
+      div.innerHTML = `<div class="msg-name">${escapeHtml(displayName)}</div>
+                       <div class="msg-bubble">${escapeHtml(payload.text)}</div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    function joinRoomByName(roomRaw){
-      const room = sanitizeRoom(roomRaw);
-      if (!room) return;
-      currentRoom = room;
-      roomTitle.innerText = room + " Room";
-      setActiveSidebarRoomEl(room);
-      addRoomToSidebar(room);
-      attachListenerForRoom(room);
-      createBox.classList.add('hidden');
-      joinBox.classList.add('hidden');
-    }
-
-    function joinPublic(){
-      currentRoom = 'public';
-      roomTitle.innerText = 'Public Chat';
-      setActiveSidebarRoomEl('public');
-      attachListenerForRoom('public');
-      createBox.classList.add('hidden');
-      joinBox.classList.add('hidden');
-    }
-
-    let sendDebounce = false;
     function sendMessage(){
       const txt = msgInput.value.trim();
-      if (!txt) return;
-      if (sendDebounce) return;
-      sendDebounce = true;
-      sendBtn.disabled = true;
-
+      if(!txt) return;
       push(ref(db, "messages/" + currentRoom), {
         name: username,
+        id: myID,
         text: txt,
         timestamp: Date.now()
-      }).catch(err=>{
-        console.error("send error", err);
-      }).finally(()=>{
-        setTimeout(()=>{
-          sendDebounce = false;
-          sendBtn.disabled = false;
-        }, 350);
       });
-
       msgInput.value = '';
     }
 
     sendBtn.addEventListener('click', sendMessage);
-    msgInput.addEventListener('keypress', (e)=> { if (e.key === 'Enter') sendMessage(); });
+    msgInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter') sendMessage(); });
 
-    publicRoomBtn.addEventListener('click', joinPublic);
-
-    createBtn.addEventListener('click', ()=>{
-      createBox.classList.toggle('hidden');
-      joinBox.classList.add('hidden');
-      createInput.focus();
-    });
-    
-    joinBtn.addEventListener('click', ()=>{
-      joinBox.classList.toggle('hidden');
-      createBox.classList.add('hidden');
-      joinInput.focus();
-    });
-
-    doCreate.addEventListener('click', ()=>{
-      const r = sanitizeRoom(createInput.value);
-      if (!r) return alert('Enter a room name');
-      joinRoomByName(r);
-      createInput.value = '';
-    });
-
-    doJoin.addEventListener('click', ()=>{
-      const r = sanitizeRoom(joinInput.value);
-      if (!r) return alert('Enter a room name');
-      joinRoomByName(r);
-      joinInput.value = '';
+    publicRoomBtn.addEventListener('click', ()=>{
+      roomTitle.innerText = 'Public Chat';
     });
 
     function handleNameSubmit(e){
       if(e) e.preventDefault();
       const name = nameInput.value.trim();
-      if (!name) {
-        alert('Please enter a display name');
-        return;
-      }
-      username = name.substring(0, 32);
+      if(!name){ alert('Enter a display name'); return; }
+      username = name.substring(0,32);
       nameModal.classList.add('hidden');
-      joinPublic();
+
+      // Load existing messages
+      const messagesRef = ref(db, "messages/" + currentRoom);
+      onChildAdded(messagesRef, (snap)=>{
+        const m = snap.val();
+        if(!m) return;
+        appendMessage(m);
+      });
     }
 
     nameSubmit.addEventListener('click', handleNameSubmit);
-    
-    nameInput.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleNameSubmit(e);
-      }
-    });
-
-    setTimeout(() => nameInput.focus(), 100);
+    nameInput.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ handleNameSubmit(e); } });
+    setTimeout(()=>nameInput.focus(),100);
   </script>
 </body>
 </html>
