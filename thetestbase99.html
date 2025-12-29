@@ -1924,103 +1924,94 @@ if (selectedBackground) {
 
 
 <script>
-  const win = document.getElementById("hiddenDiv");
-if (!win) throw new Error("No element with id 'hiddenDiv' found.");
+const win = document.getElementById("hiddenDiv");
+const header = win.querySelector(".window-header");
+const resizer = win.querySelector(".resizer");
 
-// Make sure div has position absolute
-win.style.position = "absolute";
-win.style.userSelect = "none";
-
-// Create resizer if missing
-let resizer = win.querySelector(".resizer");
-if (!resizer) {
-  resizer = document.createElement("div");
-  resizer.className = "resizer";
-  resizer.style.position = "absolute";
-  resizer.style.width = "15px";
-  resizer.style.height = "15px";
-  resizer.style.right = "0";
-  resizer.style.bottom = "0";
-  resizer.style.cursor = "nwse-resize";
-  resizer.style.background = "rgba(255,255,255,0.3)";
-  win.appendChild(resizer);
-}
-
-// Global state
 let isDragging = false;
 let isResizing = false;
-let startX, startY, startWidth, startHeight, startLeft, startTop;
+let offsetX = 0;
+let offsetY = 0;
+let startX = 0;
+let startY = 0;
+let startWidth = 0;
+let startHeight = 0;
 
-// DRAG
-win.addEventListener("mousedown", e => {
-  if (e.target === resizer) return; // ignore clicks on resizer
-  e.preventDefault();
-
+// DRAGGING - Only from header
+header.addEventListener("mousedown", e => {
   isDragging = true;
-  startX = e.clientX;
-  startY = e.clientY;
-  startLeft = win.offsetLeft;
-  startTop = win.offsetTop;
-  win.style.cursor = "move";
-});
-
-document.addEventListener("mousemove", e => {
-  if (isDragging) {
-    let newLeft = startLeft + (e.clientX - startX);
-    let newTop  = startTop  + (e.clientY - startY);
-
-    const maxX = window.innerWidth - win.offsetWidth;
-    const maxY = window.innerHeight - win.offsetHeight;
-
-    win.style.left = Math.max(0, Math.min(newLeft, maxX)) + "px";
-    win.style.top  = Math.max(0, Math.min(newTop, maxY)) + "px";
-  }
-
-  if (isResizing) {
-    let newWidth  = startWidth + (e.clientX - startX);
-    let newHeight = startHeight + (e.clientY - startY);
-
-    const maxWidth  = window.innerWidth - startLeft;
-    const maxHeight = window.innerHeight - startTop;
-
-    win.style.width  = Math.max(100, Math.min(newWidth, maxWidth)) + "px";
-    win.style.height = Math.max(100, Math.min(newHeight, maxHeight)) + "px";
-  }
-});
-
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-  isResizing = false;
-  win.style.cursor = "default";
-});
-
-// RESIZE
-resizer.addEventListener("mousedown", e => {
+  // Calculate offset from mouse to top-left of window
+  offsetX = e.clientX - win.offsetLeft;
+  offsetY = e.clientY - win.offsetTop;
   e.preventDefault();
-  e.stopPropagation();
+});
 
+// RESIZING - Only from resizer corner
+resizer.addEventListener("mousedown", e => {
   isResizing = true;
   startX = e.clientX;
   startY = e.clientY;
   startWidth = win.offsetWidth;
   startHeight = win.offsetHeight;
-  startLeft = win.offsetLeft;
-  startTop = win.offsetTop;
+  e.preventDefault();
+  e.stopPropagation(); // Prevent drag from triggering
 });
 
-// Keep div inside viewport on window resize
+// MOUSE MOVE - Handle both dragging and resizing
+document.addEventListener("mousemove", e => {
+  if (isDragging) {
+    // Calculate new position based on mouse position minus offset
+    let newLeft = e.clientX - offsetX;
+    let newTop = e.clientY - offsetY;
+
+    // Keep within viewport bounds
+    const maxX = window.innerWidth - win.offsetWidth;
+    const maxY = window.innerHeight - win.offsetHeight;
+
+    newLeft = Math.max(0, Math.min(newLeft, maxX));
+    newTop = Math.max(0, Math.min(newTop, maxY));
+
+    win.style.left = newLeft + "px";
+    win.style.top = newTop + "px";
+  }
+
+  if (isResizing) {
+    // Calculate size change
+    const deltaX = e.clientX - startX;
+    const deltaY = e.clientY - startY;
+
+    let newWidth = startWidth + deltaX;
+    let newHeight = startHeight + deltaY;
+
+    // Keep minimum size and within viewport
+    const maxWidth = window.innerWidth - win.offsetLeft;
+    const maxHeight = window.innerHeight - win.offsetTop;
+
+    newWidth = Math.max(200, Math.min(newWidth, maxWidth));
+    newHeight = Math.max(150, Math.min(newHeight, maxHeight));
+
+    win.style.width = newWidth + "px";
+    win.style.height = newHeight + "px";
+  }
+});
+
+// MOUSE UP - Stop dragging/resizing
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+  isResizing = false;
+});
+
+// Keep window in viewport on window resize
 window.addEventListener("resize", () => {
   const maxX = window.innerWidth - win.offsetWidth;
   const maxY = window.innerHeight - win.offsetHeight;
 
-  let left = parseInt(win.style.left) || 0;
-  let top  = parseInt(win.style.top) || 0;
+  let left = win.offsetLeft;
+  let top = win.offsetTop;
 
   if (left > maxX) win.style.left = Math.max(0, maxX) + "px";
-  if (top  > maxY) win.style.top  = Math.max(0, maxY) + "px";
+  if (top > maxY) win.style.top = Math.max(0, maxY) + "px";
 });
-
-
 </script>
 
 
