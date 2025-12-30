@@ -2001,6 +2001,7 @@ let startX = 0;
 let startY = 0;
 let startWidth = 0;
 let startHeight = 0;
+let hasBeenPositioned = false;
 
 // Disable iframe pointer events during drag/resize
 function disableIframe() {
@@ -2018,47 +2019,51 @@ function enableIframe() {
 }
 
 dragHandle.addEventListener("mousedown", e => {
+  const rect = win.getBoundingClientRect();
+  
+  // Convert positioning BEFORE setting isDragging
+  if (!hasBeenPositioned) {
+    win.style.transform = 'none';
+    win.style.margin = '0';
+    win.style.inset = 'auto';
+    win.style.left = rect.left + 'px';
+    win.style.top = rect.top + 'px';
+    hasBeenPositioned = true;
+  }
+  
   isDragging = true;
   disableIframe();
   
-  const rect = win.getBoundingClientRect();
   offsetX = e.clientX - rect.left;
   offsetY = e.clientY - rect.top;
-  
-  // Only convert if currently centered
-  if (win.style.left === '' || win.style.left === 'auto') {
-    win.style.transform = 'none';
-    win.style.left = rect.left + 'px';
-    win.style.top = rect.top + 'px';
-    win.style.margin = '0';
-    win.style.inset = 'auto';
-  }
   
   e.preventDefault();
   e.stopPropagation();
 });
 
 resizer.addEventListener("mousedown", e => {
+  const rect = win.getBoundingClientRect();
+  
+  // Convert positioning BEFORE setting isResizing
+  if (!hasBeenPositioned) {
+    win.style.transform = 'none';
+    win.style.margin = '0';
+    win.style.inset = 'auto';
+    win.style.left = rect.left + 'px';
+    win.style.top = rect.top + 'px';
+    hasBeenPositioned = true;
+  }
+  
   isResizing = true;
   disableIframe();
   
   startX = e.clientX;
   startY = e.clientY;
-  
-  const rect = win.getBoundingClientRect();
   startWidth = rect.width;
   startHeight = rect.height;
   
   win.style.width = startWidth + 'px';
   win.style.height = startHeight + 'px';
-  
-  if (win.style.transform !== 'none' && win.style.transform !== '') {
-    win.style.transform = 'none';
-    win.style.left = rect.left + 'px';
-    win.style.top = rect.top + 'px';
-    win.style.margin = '0';
-    win.style.inset = 'auto';
-  }
   
   e.preventDefault();
   e.stopPropagation();
