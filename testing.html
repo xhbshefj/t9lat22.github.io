@@ -2343,13 +2343,14 @@ wins.forEach(win => {
 
 <script>
 /* ===============================
-   T9 OS – Hidden Iframe Pause Engine
+   T9 OS – Hidden Iframe Freeze & Mute
    =============================== */
 
 const APP_WINDOWS = [
   "hiddenDiv",
   "aiDiv",
   "movieDiv",
+  "musicDiv",
   "terminalDiv",
   "searchDiv",
   "ChatDiv",
@@ -2359,64 +2360,66 @@ const APP_WINDOWS = [
 
 const PAUSE_MESSAGE = { type: "pause" };
 const RESUME_MESSAGE = { type: "resume" };
+const MUTE_MESSAGE = { type: "mute" };
+const UNMUTE_MESSAGE = { type: "unmute" };
 
-// Send message to iframe to pause/resume (iframes must support this)
-function pauseIframe(frame) {
-  if (!frame.dataset.paused) {
-    frame.contentWindow?.postMessage(PAUSE_MESSAGE, "*");
-    frame.dataset.paused = "true";
-  }
+// Send message to iframe to pause/resume/mute/unmute
+function sendMessage(frame, message) {
+  frame.contentWindow?.postMessage(message, "*");
 }
 
-function resumeIframe(frame) {
-  if (frame.dataset.paused) {
-    frame.contentWindow?.postMessage(RESUME_MESSAGE, "*");
-    delete frame.dataset.paused;
-  }
+// Freeze and mute iframe
+function freezeIframe(frame) {
+  sendMessage(frame, PAUSE_MESSAGE);
+  sendMessage(frame, MUTE_MESSAGE);
+  frame.dataset.paused = "true";
 }
 
-// Freeze iframes in a hidden container
-function freezeIframe(containerId) {
+// Restore and unmute iframe
+function restoreIframe(frame) {
+  sendMessage(frame, RESUME_MESSAGE);
+  sendMessage(frame, UNMUTE_MESSAGE);
+  delete frame.dataset.paused;
+}
+
+// Freeze/mute all iframes in a container
+function freezeContainer(containerId) {
   const box = document.getElementById(containerId);
   if (!box) return;
 
-  box.querySelectorAll("iframe").forEach(frame => {
-    pauseIframe(frame);
-  });
+  box.querySelectorAll("iframe").forEach(frame => freezeIframe(frame));
 }
 
-// Restore iframes when container shows
-function restoreIframe(containerId) {
+// Restore/unmute all iframes in a container
+function restoreContainer(containerId) {
   const box = document.getElementById(containerId);
   if (!box) return;
 
-  box.querySelectorAll("iframe").forEach(frame => {
-    resumeIframe(frame);
-  });
+  box.querySelectorAll("iframe").forEach(frame => restoreIframe(frame));
 }
 
-// Watch each window for display changes
+// Observe div visibility changes
 APP_WINDOWS.forEach(id => {
   const box = document.getElementById(id);
   if (!box) return;
 
   const observer = new MutationObserver(() => {
     if (getComputedStyle(box).display === "none") {
-      freezeIframe(id);
+      freezeContainer(id);
     } else {
-      restoreIframe(id);
+      restoreContainer(id);
     }
   });
 
   observer.observe(box, { attributes: true, attributeFilter: ["style"] });
 });
 
-// Pause everything when the tab is hidden
+// Pause/mute everything if browser tab is hidden
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    APP_WINDOWS.forEach(freezeIframe);
+    APP_WINDOWS.forEach(freezeContainer);
   } else {
-    APP_WINDOWS.forEach(restoreIframe);
+    APP_WINDOWS.forEach(restoreContainer);
   }
 });
 </script>
