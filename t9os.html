@@ -2041,8 +2041,15 @@ if (selectedBackground) {
       
       // Clear the page
       document.body.innerHTML = "";
-      document.body.style.cssText = "background: red; color: white; display: flex; justify-content: center; align-items: center; font-size: 40px; overflow: hidden; margin: 0; height: 100vh;";
-      document.body.innerText = "BANNED";
+      document.body.style.cssText = "background: red; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 40px; overflow: hidden; margin: 0; height: 100vh; text-align:center;";
+
+      // SHOW BANNED + ID
+      document.body.innerHTML = `
+        <div>BANNED</div>
+        <div style="font-size:22px;margin-top:15px;opacity:0.85;">
+          Your ID: <b>${myID}</b>
+        </div>
+      `;
 
       // Prevent all interactions
       const preventAll = (e) => {
@@ -2062,16 +2069,13 @@ if (selectedBackground) {
       Storage.prototype.removeItem = function() { return; };
       Storage.prototype.clear = function() { return; };
       
-      // Lock down critical objects
       Object.freeze(localStorage);
       Object.freeze(sessionStorage);
       
-      // Prevent page navigation
       window.onbeforeunload = () => true;
       history.pushState(null, null, location.href);
       window.onpopstate = () => history.go(1);
       
-      // Disable console access to critical functions
       window.db = null;
       window.firebase = null;
     }
@@ -2092,13 +2096,11 @@ if (selectedBackground) {
       const checkInterval = setInterval(() => {
         const currentID = localStorage.getItem(ID_KEY);
         if (currentID !== myID) {
-          // ID was tampered with - restore it
           originalSetItem.call(localStorage, ID_KEY, myID);
         }
         
-        // Check if still banned
         if (isLocked) {
-          lockScreen(); // Re-apply lock if someone tries to unlock
+          lockScreen();
         }
       }, 100);
 
@@ -2143,7 +2145,8 @@ if (selectedBackground) {
     });
   })();
 </script>
-<!--test-->
+
+<!--test2-->
 
 
 
