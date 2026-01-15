@@ -1,879 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POKi - Play Free Online Games</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7176221127189774"
-    crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #ff4655;
-            --secondary: #0f1923;
-            --accent: #1f2d3d;
-            --light: #ece8e1;
-            --dark: #0f1923;
-            --card-bg: #1a2332;
-            --hover: #2a3a52;
-            --radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>T9 AI</title>
+<link rel="icon" href="/assets/images/icons/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+<style>
+:root{
+ --bg:#020512;
+ --panel:#070b1f;
+ --border:#142053;
+ --accent:#4cc3ff;
+ --accent2:#7b8cff;
+ --text:#e7ecff;
+ --muted:#8fa1ff;
+}
 
-        body {
-            background: linear-gradient(135deg, var(--secondary) 0%, #1a2b3c 100%);
-            color: var(--light);
-            min-height: 100vh;
-            padding-bottom: 40px;
-        }
+*{box-sizing:border-box}
 
-        header {
-            background: rgba(15, 25, 35, 0.9);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
+body{
+ margin:0;
+ height:100vh;
+ background:
+  radial-gradient(circle at 20% 20%,#0b1a44 0%,transparent 60%),
+  radial-gradient(circle at 80% 30%,#0d235a 0%,transparent 60%),
+  linear-gradient(#020512,#020512);
+ color:var(--text);
+ font-family:Inter,sans-serif;
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.chat-container{
+ width:100%;
+ height:100%;
+ display:flex;
+ flex-direction:column;
+ background:var(--panel);
+}
 
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.chat-header{
+ padding:16px;
+ font-weight:600;
+ letter-spacing:.5px;
+ background:linear-gradient(90deg,var(--accent),var(--accent2));
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+ border-bottom:1px solid var(--border);
+}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--light);
-        }
+.chat-body{
+ flex:1;
+ padding:16px;
+ overflow-y:auto;
+ display:flex;
+ flex-direction:column;
+ gap:12px;
+}
 
-        .logo span {
-            background: linear-gradient(to right, #ff4655, #ff8e53);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.message{
+ max-width:85%;
+ padding:12px 14px;
+ border-radius:12px;
+ line-height:1.4;
+}
 
-        .logo i {
-            color: var(--primary);
-        }
+.user-message{
+ align-self:flex-end;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ color:#000;
+}
 
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(rgba(15, 25, 35, 0.7), rgba(15, 25, 35, 0.9));
-            margin-bottom: 40px;
-            border-radius: 0 0 var(--radius) var(--radius);
-        }
+.ai-message{
+ align-self:flex-start;
+ background:#0c1333;
+ border:1px solid var(--border);
+}
 
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 15px;
-            background: linear-gradient(to right, #ff4655, #ff8e53);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.chat-input{
+ display:flex;
+ gap:10px;
+ padding:14px;
+ border-top:1px solid var(--border);
+}
 
-        .hero p {
-            font-size: 18px;
-            max-width: 600px;
-            margin: 0 auto 30px;
-            color: rgba(255, 255, 255, 0.8);
-        }
+.chat-input input{
+ flex:1;
+ background:#050a22;
+ border:1px solid var(--border);
+ color:var(--text);
+ padding:12px;
+ border-radius:10px;
+ outline:none;
+}
 
-        .games-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-            padding: 0 20px;
-        }
+.chat-input button{
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ border:none;
+ border-radius:10px;
+ padding:0 18px;
+ color:#000;
+ cursor:pointer;
+}
 
-        .game-btn {
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-            position: relative;
-            display: block;
-            background: var(--card-bg);
-        }
-
-        .game-btn:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
-            background: var(--hover);
-        }
-
-        /* Large game size */
-        .game-btn.large {
-            width: 100%;
-            height: 240px;
-            grid-column: span 2;
-        }
-
-        /* Medium game size */
-        .game-btn.medium {
-            width: 100%;
-            height: 200px;
-        }
-
-        /* Small game size */
-        .game-btn.small {
-            width: 100%;
-            height: 160px;
-        }
-
-        .game-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .game-title {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            margin-top: 50px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .footer-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .game-btn.large {
-                grid-column: span 1;
-                height: 200px;
-            }
-            
-            .games-container {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-        }
-    </style>
+footer{
+ text-align:center;
+ font-size:12px;
+ color:var(--muted);
+ padding:8px;
+ border-top:1px solid var(--border);
+}
+</style>
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-gamepad"></i>
-                    <span>POKi</span>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <section class="hero">
-        <div class="container">
-            <h1>Play Free Online Games</h1>
-            <p>Discover thousands of exciting games. No downloads required!</p>
-        </div>
-    </section>
+<div class="chat-container">
+ <div class="chat-header">T9 AI</div>
+ <div class="chat-body" id="chatBody"></div>
 
-    <div class="container">
-        <div class="games-container">
-            <!-- LARGE GAMES -->
-            <a href="/worldcup" class="game-btn large">
-                <img src="worldcup.png" alt="WORLD CUP">
-                <div class="game-title">WORLD CUP</div>
-            </a>
-            
-            <a href="/kidsgiving" class="game-btn large">
-                <img src="kidsgiving.png" alt="KIDS GIVING">
-                <div class="game-title">KIDS GIVING</div>
-            </a>
-            
-            <!-- MEDIUM GAMES -->
-            <a href="/rooftop2" class="game-btn medium">
-                <img src="rooftop2.png" alt="Rooftop Snipers 2">
-                <div class="game-title">Rooftop Snipers 2</div>
-            </a>
-            
-            <a href="/shell" class="game-btn medium">
-                <img src="shell.png" alt="Shell Shockers">
-                <div class="game-title">Shell Shockers</div>
-            </a>
-            
-            <a href="/clash" class="game-btn medium">
-                <img src="clash.png" alt="Clash Royale">
-                <div class="game-title">Clash Royale</div>
-            </a>
-            
-            <a href="/solarsmash" class="game-btn medium">
-                <img src="solar.png" alt="Solar Smash">
-                <div class="game-title">Solar Smash</div>
-            </a>
-            
-            <!-- SMALL GAMES -->
-            <a href="/soccer-random" class="game-btn small">
-                <img src="soccer-random.png" alt="Soccer Random">
-                <div class="game-title">Soccer Random</div>
-            </a>
-            
-            <a href="/sniper" class="game-btn small">
-                <img src="sniper.png" alt="Sniper Shot">
-                <div class="game-title">Sniper Shot</div>
-            </a>
-            
-            <a href="/wheelie" class="game-btn small">
-                <img src="wheelie.png" alt="Wheelie Bike 2">
-                <div class="game-title">Wheelie Bike 2</div>
-            </a>
-            
-            <a href="/block" class="game-btn small">
-                <img src="blockblast.png" alt="Block Blast">
-                <div class="game-title">Block Blast</div>
-            </a>
-            
-            <a href="/crazycars" class="game-btn small">
-                <img src="crazycars.png" alt="Crazy Cars">
-                <div class="game-title">Crazy Cars</div>
-            </a>
-            
-            <a href="/slowroad" class="game-btn small">
-                <img src="slow.png" alt="Slow Roads">
-                <div class="game-title">Slow Roads</div>
-            </a>
-            
-            <a href="/miami" class="game-btn small">
-                <img src="miami.png" alt="Hotline Miami">
-                <div class="game-title">Hotline Miami</div>
-            </a>
-            
-            <a href="/baseball" class="game-btn small">
-                <img src="baseball.png" alt="Baseball Bros">
-                <div class="game-title">Baseball Bros</div>
-            </a>
-            
-            <a href="/basketbros" class="game-btn small">
-                <img src="basketbros.png" alt="Basketball Bros">
-                <div class="game-title">Basketball Bros</div>
-            </a>
-            
-            <a href="/football" class="game-btn small">
-                <img src="footballbros.png" alt="Football Bros">
-                <div class="game-title">Football Bros</div>
-            </a>
-            
-            <a href="/jellytruck" class="game-btn small">
-                <img src="jellytruck.png" alt="Jelly Truck">
-                <div class="game-title">Jelly Truck</div>
-            </a>
-            
-            <a href="/ultrakill" class="game-btn small">
-                <img src="ultrakill.png" alt="Ultrakill">
-                <div class="game-title">Ultrakill</div>
-            </a>
-            
-            <a href="/friday" class="game-btn small">
-                <img src="FNF.gif" alt="Friday Night Funkin">
-                <div class="game-title">Friday Night Funkin</div>
-            </a>
-            
-            <a href="/spookymoto" class="game-btn small">
-                <img src="spookyland.png" alt="Moto X3M Spooky Land">
-                <div class="game-title">Moto X3M Spooky</div>
-            </a>
-            
-            <a href="/elastic" class="game-btn small">
-                <img src="elastic.png" alt="Elastic Man">
-                <div class="game-title">Elastic Man</div>
-            </a>
-            
-            <a href="/drawjoust" class="game-btn small">
-                <img src="joust.png" alt="Draw Joust">
-                <div class="game-title">Draw Joust</div>
-            </a>
-            
-            <a href="/crossy" class="game-btn small">
-                <img src="crossy.jpg" alt="Crossy Road">
-                <div class="game-title">Crossy Road</div>
-            </a>
-            
-            <a href="/truck" class="game-btn small">
-                <img src="clusterrush.png" alt="Cluster Rush">
-                <div class="game-title">Cluster Rush</div>
-            </a>
-            
-            <a href="/gunspin" class="game-btn small">
-                <img src="gunspin.png" alt="Gun Spin">
-                <div class="game-title">Gun Spin</div>
-            </a>
-            
-            <a href="/escape2" class="game-btn small">
-                <img src="escape2.png" alt="Escape Road 2">
-                <div class="game-title">Escape Road 2</div>
-            </a>
-            
-            <a href="/cookie" class="game-btn small">
-                <img src="cookie.png" alt="Cookie Clicker">
-                <div class="game-title">Cookie Clicker</div>
-            </a>
-            
-            <a href="/crazykitty" class="game-btn small">
-                <img src="kitty.png" alt="Crazy Kitty 3D">
-                <div class="game-title">Crazy Kitty 3D</div>
-            </a>
-            
-            <a href="/ninjanf" class="game-btn small">
-                <img src="fninja.jpg" alt="Fruit Ninja">
-                <div class="game-title">Fruit Ninja</div>
-            </a>
-            
-            <a href="/usservice" class="game-btn small">
-                <img src="among.webp" alt="Among Us">
-                <div class="game-title">Among Us</div>
-            </a>
-            
-            <a href="/kartz" class="game-btn small">
-                <img src="smash.png" alt="Smash Kartz">
-                <div class="game-title">Smash Kartz</div>
-            </a>
-            
-            <a href="/run" class="game-btn small">
-                <img src="run.png" alt="Run">
-                <div class="game-title">Run</div>
-            </a>
-            
-            <a href="/run2" class="game-btn small">
-                <img src="run2.png" alt="Run 2">
-                <div class="game-title">Run 2</div>
-            </a>
-            
-            <a href="/minecraft" class="game-btn small">
-                <img src="mine2.png" alt="Minecraft">
-                <div class="game-title">Minecraft</div>
-            </a>
-            
-            <a href="/garden" class="game-btn small">
-                <img src="garden.png" alt="Grow a Garden">
-                <div class="game-title">Grow a Garden</div>
-            </a>
-            
-            <a href="/dino" class="game-btn small">
-                <img src="dino.png" alt="Dinosaur Game">
-                <div class="game-title">Dinosaur Game</div>
-            </a>
-            
-            <a href="/2048" class="game-btn small">
-                <img src="2048.png" alt="2048">
-                <div class="game-title">2048</div>
-            </a>
-            
-            <a href="/wheels" class="game-btn small">
-                <img src="wheels.png" alt="Happy Wheels">
-                <div class="game-title">Happy Wheels</div>
-            </a>
-            
-            <a href="/baldi" class="game-btn small">
-                <img src="baldi.png" alt="Baldi">
-                <div class="game-title">Baldi</div>
-            </a>
-            
-            <a href="/slope" class="game-btn small">
-                <img src="slope1.png" alt="Slope">
-                <div class="game-title">Slope</div>
-            </a>
-            
-            <a href="/roblox" class="game-btn small">
-                <img src="roblox.png" alt="Roblox">
-                <div class="game-title">Roblox</div>
-            </a>
-            
-            <a href="/fnaf" class="game-btn small">
-                <img src="fnaf.png" alt="Five Nights at Freddy's">
-                <div class="game-title">Five Nights at Freddy's</div>
-            </a>
-            
-            <a href="/run3" class="game-btn small">
-                <img src="run3.png" alt="Run 3">
-                <div class="game-title">Run 3</div>
-            </a>
-            
-            <a href="/temple" class="game-btn small">
-                <img src="temple.png" alt="Temple Run">
-                <div class="game-title">Temple Run</div>
-            </a>
-            
-            <a href="/tetris" class="game-btn small">
-                <img src="tetris.png" alt="Tetris">
-                <div class="game-title">Tetris</div>
-            </a>
-            
-            <a href="/stickhook" class="game-btn small">
-                <img src="stickhook.png" alt="Stickman Hook">
-                <div class="game-title">Stickman Hook</div>
-            </a>
-            
-            <a href="/core" class="game-btn small">
-                <img src="core.png" alt="Core Ball">
-                <div class="game-title">Core Ball</div>
-            </a>
-            
-            <a href="/stack/" class="game-btn small">
-                <img src="stack.png" alt="Stack Block">
-                <div class="game-title">Stack Block</div>
-            </a>
-            
-            <a href="/flip" class="game-btn small">
-                <img src="flip.png" alt="Just Flip">
-                <div class="game-title">Just Flip</div>
-            </a>
-            
-            <a href="/gta5" class="game-btn small">
-                <img src="gta6.png" alt="GTA">
-                <div class="game-title">GTA</div>
-            </a>
-            
-            <a href="/box" class="game-btn small">
-                <img src="https://cdn2.steamgriddb.com/thumb/c442b40dabc7f4bda930bef2b5d100fc.jpg" alt="Incredibox">
-                <div class="game-title">Incredibox</div>
-            </a>
-            
-            <a href="/soccer" class="game-btn small">
-                <img src="football.png" alt="Football Legends">
-                <div class="game-title">Football Legends</div>
-            </a>
-            
-            <a href="/shortlife" class="game-btn small">
-                <img src="shortlife.png" alt="Short Life">
-                <div class="game-title">Short Life</div>
-            </a>
-            
-            <a href="/manic" class="game-btn small">
-                <img src="manic.png" alt="Moto Maniac">
-                <div class="game-title">Moto Maniac</div>
-            </a>
-            
-            <a href="/slope2" class="game-btn small">
-                <img src="slope2.png" alt="Slope 2">
-                <div class="game-title">Slope 2</div>
-            </a>
-            
-            <a href="/thrill" class="game-btn small">
-                <img src="thrill.png" alt="Aqua Thrill">
-                <div class="game-title">Aqua Thrill</div>
-            </a>
-            
-            <a href="/stair" class="game-btn small">
-                <img src="stair.png" alt="Stair Race 3D">
-                <div class="game-title">Stair Race 3D</div>
-            </a>
-            
-            <a href="/blight" class="game-btn small">
-                <img src="blight.png" alt="Blight">
-                <div class="game-title">Blight</div>
-            </a>
-            
-            <a href="/vex" class="game-btn small">
-                <img src="vex4.png" alt="Vex 4">
-                <div class="game-title">Vex 4</div>
-            </a>
-            
-            <a href="/hallow" class="game-btn small">
-                <img src="https://i.ibb.co/dmBbf5s/Screenshot-2024-04-10-7-06-13-PM.png" alt="Secrets of Hallowland">
-                <div class="game-title">Secrets of Hallowland</div>
-            </a>
-            
-            <a href="/tapgoal" class="game-btn small">
-                <img src="tap.webp" alt="Tap Goal">
-                <div class="game-title">Tap Goal</div>
-            </a>
-            
-            <a href="/snowrider" class="game-btn small">
-                <img src="/img/snow.png" alt="Snow Rider">
-                <div class="game-title">Snow Rider</div>
-            </a>
-            
-            <a href="/rocketsoccer" class="game-btn small">
-                <img src="img/soccer.png" alt="Rocket Soccer">
-                <div class="game-title">Rocket Soccer</div>
-            </a>
-            
-            <a href="/superhot" class="game-btn small">
-                <img src="/img/superhot.png" alt="Super Hot">
-                <div class="game-title">Super Hot</div>
-            </a>
-            
-            <a href="/funnyshooter" class="game-btn small">
-                <img src="funny.png" alt="Funny Shooter 2">
-                <div class="game-title">Funny Shooter 2</div>
-            </a>
-            
-            <a href="/icedodo" class="game-btn small">
-                <img src="ice.jpg" alt="Ice Dodo">
-                <div class="game-title">Ice Dodo</div>
-            </a>
-            
-            <a href="/eggy-car-main/eggy-car-main/frame" class="game-btn small">
-                <img src="eggy.jpg" alt="Eggy Car">
-                <div class="game-title">Eggy Car</div>
-            </a>
-            
-            <a href="/holeio" class="game-btn small">
-                <img src="holeio.png" alt="Hole.io">
-                <div class="game-title">Hole.io</div>
-            </a>
-            
-            <a href="/dmad" class="game-btn small">
-                <img src="dmad.png" alt="Drive Mad">
-                <div class="game-title">Drive Mad</div>
-            </a>
-            
-            <a href="/cubeshot" class="game-btn small">
-                <img src="cubeshot.png" alt="Cubeshot">
-                <div class="game-title">Cubeshot</div>
-            </a>
-            
-            <a href="/1v1" class="game-btn small">
-                <img src="1v1.jpg" alt="1v1 LOL">
-                <div class="game-title">1v1 LOL</div>
-            </a>
-            
-            <a href="/bitlifeservice" class="game-btn small">
-                <img src="bitlife.png" alt="Bitlife">
-                <div class="game-title">Bitlife</div>
-            </a>
-            
-            <a href="/jet" class="game-btn small">
-                <img src="jet.png" alt="Jetpack Joyride">
-                <div class="game-title">Jetpack Joyride</div>
-            </a>
-            
-            <a href="/ovo" class="game-btn small">
-                <img src="ovo.png" alt="Ovo">
-                <div class="game-title">Ovo</div>
-            </a>
-            
-            <a href="/granny" class="game-btn small">
-                <img src="granny.png" alt="Granny">
-                <div class="game-title">Granny</div>
-            </a>
-            
-            <a href="/grandvegas" class="game-btn small">
-                <img src="grandvegas.png" alt="Grand Vegas">
-                <div class="game-title">Grand Vegas</div>
-            </a>
-            
-            <a href="/polytrack" class="game-btn small">
-                <img src="polytrack.png" alt="Polytrack">
-                <div class="game-title">Polytrack</div>
-            </a>
-            
-            <a href="/subwayhw" class="game-btn small">
-                <img src="subwayHW.png" alt="Subway Surfers">
-                <div class="game-title">Subway Surfers</div>
-            </a>
-            
-            <a href="/basket" class="game-btn small">
-                <img src="basketL.png" alt="Basketball Legends">
-                <div class="game-title">Basketball Legends</div>
-            </a>
-            
-            <a href="/timeshooter3" class="game-btn small">
-                <img src="timeshooter.png" alt="Timeshooter 3">
-                <div class="game-title">Timeshooter 3</div>
-            </a>
-            
-            <a href="/moneyroll" class="game-btn small">
-                <img src="moneyroll.png" alt="Money Roll">
-                <div class="game-title">Money Roll</div>
-            </a>
-            
-            <a href="/backrooms" class="game-btn small">
-                <img src="backrooms.png" alt="Backrooms">
-                <div class="game-title">Backrooms</div>
-            </a>
-            
-            <a href="/fnaf2" class="game-btn small">
-                <img src="fnaf2.png" alt="Five Nights at Freddy's 2">
-                <div class="game-title">Five Nights at Freddy's 2</div>
-            </a>
-            
-            <a href="/bowl" class="game-btn small">
-                <img src="bowl.png" alt="Retro Bowl">
-                <div class="game-title">Retro Bowl</div>
-            </a>
-            
-            <a href="/uno" class="game-btn small">
-                <img src="uno.png" alt="Uno">
-                <div class="game-title">Uno</div>
-            </a>
-            
-            <a href="/burgeria" class="game-btn small">
-                <img src="burgeria.png" alt="Burgeria">
-                <div class="game-title">Burgeria</div>
-            </a>
-            
-            <a href="/pou" class="game-btn small">
-                <img src="pou.png" alt="Pou">
-                <div class="game-title">Pou</div>
-            </a>
-            
-            <a href="/johnny" class="game-btn small">
-                <img src="johnny.png" alt="Johnny">
-                <div class="game-title">Johnny</div>
-            </a>
-            
-            <a href="/robber" class="game-btn small">
-                <img src="robber2.png" alt="Bob the Robber 2">
-                <div class="game-title">Bob the Robber 2</div>
-            </a>
-            
-            <a href="/wordle" class="game-btn small">
-                <img src="wordle.png" alt="Wordle">
-                <div class="game-title">Wordle</div>
-            </a>
-            
-            <a href="/onlyup" class="game-btn small">
-                <img src="onlyup.png" alt="Onlyup">
-                <div class="game-title">Onlyup</div>
-            </a>
-            
-            <a href="/tinyfishing" class="game-btn small">
-                <img src="fishing.png" alt="Tinyfishing">
-                <div class="game-title">Tinyfishing</div>
-            </a>
-            
-            <a href="/goball" class="game-btn small">
-                <img src="goball.png" alt="Goball">
-                <div class="game-title">Goball</div>
-            </a>
-            
-            <a href="/helix" class="game-btn small">
-                <img src="helix.png" alt="Helix">
-                <div class="game-title">Helix</div>
-            </a>
-            
-            <a href="/hohazards" class="game-btn small">
-                <img src="hohazards.png" alt="House of Hazards">
-                <div class="game-title">House of Hazards</div>
-            </a>
-            
-            <a href="/president" class="game-btn small">
-                <img src="president.png" alt="President Simulator">
-                <div class="game-title">President Simulator</div>
-            </a>
-            
-            <a href="/pokemon" class="game-btn small">
-                <img src="pokemon.png" alt="Pokemon Red">
-                <div class="game-title">Pokemon Red</div>
-            </a>
-            
-            <a href="/granny2" class="game-btn small">
-                <img src="granny2.png" alt="Granny 2">
-                <div class="game-title">Granny 2</div>
-            </a>
-            
-            <a href="/hunter" class="game-btn small">
-                <img src="hunter.png" alt="Drift Hunter">
-                <div class="game-title">Drift Hunter</div>
-            </a>
-            
-            <a href="/just" class="game-btn small">
-                <img src="just.png" alt="Just Fall">
-                <div class="game-title">Just Fall</div>
-            </a>
-            
-            <a href="/pacman" class="game-btn small">
-                <img src="pacman.png" alt="Pacman">
-                <div class="game-title">Pacman</div>
-            </a>
-            
-            <a href="/knife" class="game-btn small">
-                <img src="knife.png" alt="Knife Hit">
-                <div class="game-title">Knife Hit</div>
-            </a>
-            
-            <a href="https://t9lat22.github.io/crazycattle3d/.html" class="game-btn small">
-                <img src="sheep.png" alt="Crazy Cattle 3D">
-                <div class="game-title">Crazy Cattle 3D</div>
-            </a>
-            
-            <a href="/window" class="game-btn small">
-                <img src="window.png" alt="The Man from the Window">
-                <div class="game-title">The Man from the Window</div>
-            </a>
-            
-            <a href="/capybara" class="game-btn small">
-                <img src="capybara.png" alt="Capybara Clicker">
-                <div class="game-title">Capybara Clicker</div>
-            </a>
-            
-            <a href="/balditrip" class="game-btn small">
-                <img src="balditrip.png" alt="Baldi Field Trip">
-                <div class="game-title">Baldi Field Trip</div>
-            </a>
-            
-            <a href="/basketrandom" class="game-btn small">
-                <img src="basketrandom.png" alt="Basket Random">
-                <div class="game-title">Basket Random</div>
-            </a>
-            
-            <a href="/deathrun" class="game-btn small">
-                <img src="deathrun.png" alt="Death Run 3D">
-                <div class="game-title">Death Run 3D</div>
-            </a>
-            
-            <a href="/axe" class="game-btn small">
-                <img src="axe.png" alt="Axe Random">
-                <div class="game-title">Axe Random</div>
-            </a>
-            
-            <a href="/motox3m" class="game-btn small">
-                <img src="moto.png" alt="Moto X3M">
-                <div class="game-title">Moto X3M</div>
-            </a>
-            
-            <a href="/driftboss" class="game-btn small">
-                <img src="driftboss.png" alt="Drift Boss">
-                <div class="game-title">Drift Boss</div>
-            </a>
-            
-            <a href="/bullet" class="game-btn small">
-                <img src="bullet.png" alt="Mr Bullet">
-                <div class="game-title">Mr Bullet</div>
-            </a>
-            
-            <a href="/volleyball-random/" class="game-btn small">
-                <img src="volleyball.png" alt="Volleyball Random">
-                <div class="game-title">Volleyball Random</div>
-            </a>
-            
-            <a href="/draw" class="game-btn small">
-                <img src="draw.png" alt="Draw Climber">
-                <div class="game-title">Draw Climber</div>
-            </a>
-            
-            <a href="/snowball" class="game-btn small">
-                <img src="snow.png" alt="Snowball.io">
-                <div class="game-title">Snowball.io</div>
-            </a>
-            
-            <a href="/duel" class="game-btn small">
-                <img src="duel.png" alt="Stickman Duel Battle">
-                <div class="game-title">Stickman Duel Battle</div>
-            </a>
-            
-            <a href="/pixel" class="game-btn small">
-                <img src="pixel.png" alt="Pixel Gun 3d">
-                <div class="game-title">Pixel Gun 3d</div>
-            </a>
-            
-            <a href="/duck" class="game-btn small">
-                <img src="duck.png" alt="Duck Life">
-                <div class="game-title">Duck Life</div>
-            </a>
-            
-            <a href="/riddle" class="game-btn small">
-                <img src="riddle.png" alt="Riddle School">
-                <div class="game-title">Riddle School</div>
-            </a>
-            
-            <a href="/riddle2" class="game-btn small">
-                <img src="riddle2.png" alt="Riddle School 2">
-                <div class="game-title">Riddle School 2</div>
-            </a>
-            
-            <a href="/riddle3" class="game-btn small">
-                <img src="riddle3.png" alt="Riddle School 3">
-                <div class="game-title">Riddle School 3</div>
-            </a>
-            
-            <a href="/barry" class="game-btn small">
-                <img src="barry.png" alt="Barry Prison">
-                <div class="game-title">Barry Prison</div>
-            </a>
-            
-            <a href="/brainrot" class="game-btn small">
-                <img src="brainrot.png" alt="Steal a Brainrot">
-                <div class="game-title">Steal a Brainrot</div>
-            </a>
-            
-            <a href="/golf" class="game-btn small">
-                <img src="golf.png" alt="Battle Golf">
-                <div class="game-title">Battle Golf</div>
-            </a>
-            
-            <a href="/snakeio" class="game-btn small">
-                <img src="snakeio.png" alt="Snake.io">
-                <div class="game-title">Snake.io</div>
-            </a>
-            
-            <a href="/speedstars" class="game-btn small">
-                <img src="speedstars.png" alt="Speed Stars">
-                <div class="game-title">Speed Stars</div>
-            </a>
-            
-        </div>
-    </div>
+ <div class="chat-input">
+  <input id="aiInput" placeholder="Ask T9 AI anything...">
+  <button id="sendMsg"><i class="fas fa-paper-plane"></i></button>
+ </div>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="#" class="footer-link">Home</a>
-                <a href="#" class="footer-link">About</a>
-                <a href="#" class="footer-link">Privacy Policy</a>
-                <a href="#" class="footer-link">Terms of Service</a>
-                <a href="#" class="footer-link">Contact</a>
-            </div>
-            <p>&copy; 2023 POKi. All rights reservedr54gr4.</p>
-        </div>
-    </footer>
+ <footer>Powered by Waves AI • Rebranded as T9 AI</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded",async()=>{
+
+const API_KEYS_URL="https://groq-api-keys.pages.dev/apikeys.txt"
+let apiKeys=[],apiKeyIndex=-1
+
+async function initApiKeys(){
+ const t=await (await fetch(API_KEYS_URL)).text()
+ apiKeys=t.split(/\r?\n/).filter(Boolean)
+}
+function getKey(){
+ apiKeyIndex=(apiKeyIndex+1)%apiKeys.length
+ return apiKeys[apiKeyIndex]
+}
+await initApiKeys()
+
+const chatBody=document.getElementById("chatBody")
+const aiInput=document.getElementById("aiInput")
+const sendMsg=document.getElementById("sendMsg")
+
+function add(msg,cls){
+ const d=document.createElement("div")
+ d.className="message "+cls
+ d.innerHTML=marked.parse(msg)
+ chatBody.appendChild(d)
+ chatBody.scrollTop=chatBody.scrollHeight
+}
+
+async function send(){
+ const q=aiInput.value.trim()
+ if(!q)return
+ add(q,"user-message")
+ aiInput.value=""
+ add("Thinking...","ai-message")
+
+ const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+  method:"POST",
+  headers:{Authorization:"Bearer "+getKey(),"Content-Type":"application/json"},
+  body:JSON.stringify({
+   model:"llama-3.1-8b-instant",
+   messages:[{role:"user",content:q}]
+  })
+ })
+
+ const j=await r.json()
+ chatBody.lastChild.remove()
+ add(j.choices[0].message.content,"ai-message")
+}
+
+sendMsg.onclick=send
+aiInput.addEventListener("keydown",e=>{if(e.key==="Enter")send()})
+
+add("Welcome to T9 AI 🌌","ai-message")
+})
+</script>
+
 </body>
 </html>
