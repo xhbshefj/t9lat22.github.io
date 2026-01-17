@@ -334,7 +334,6 @@ const profanityPatterns = [
   /\bs+[\s\.\-_]*h+[\s\.\-_]*[i1!]+[\s\.\-_]*t+\b/gi,
   /\bb+[\s\.\-_]*[i1!]+[\s\.\-_]*t+[\s\.\-_]*c+[\s\.\-_]*h+\b/gi,
   /\bd+[\s\.\-_]*a+[\s\.\-_]*m+[\s\.\-_]*n+\b/gi,
-  /\bh+[\s\.\-_]*e+[\s\.\-_]*l+[\s\.\-_]*l+\b/gi,
   /\bc+[\s\.\-_]*r+[\s\.\-_]*a+[\s\.\-_]*p+\b/gi,
   /\bp+[\s\.\-_]*i+[\s\.\-_]*s+[\s\.\-_]*s+\b/gi,
   /\bf+[\s\.\-_]*a+[\s\.\-_]*g+\b/gi,
@@ -376,7 +375,7 @@ function containsProfanity(text) {
   
   const normalized = normalizeText(text);
   const simplePatterns = [
-    'fuck', 'shit', 'bitch', 'damn', 'hell', 'crap', 'piss',
+    'fuck', 'shit', 'bitch', 'damn', 'crap', 'piss',
     'nigger', 'nigga', 'fag', 'faggot', 'chink', 'spic', 'wetback',
     'niger', 'niga', 'nibba'
   ];
