@@ -2417,7 +2417,294 @@ wins.forEach(win => {
 <!--test2-->
 
 
+<script>
+  /* ===============================
+   T9 OS – Optimized Iframe Manager
+   Lazy loads and destroys iframes to reduce lag
+   =============================== */
 
+const IFRAME_CONFIGS = {
+  hiddenDiv: {
+    src: 'test200.html',
+    className: 'frame',
+    id: 'frame2',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '0',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 15px 15px',
+      left: '0',
+      borderTop: '1px solid rgb(37, 37, 37)'
+    }
+  },
+  aiDiv: {
+    src: 'test100.html',
+    className: 'frame',
+    id: 'frame5',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '0',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 15px 15px',
+      left: '0',
+      borderTop: '1px solid rgb(37, 37, 37)'
+    }
+  },
+  movieDiv: {
+    src: 'movie.html',
+    className: 'mframe',
+    id: 'mframe',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '10px',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 15px 15px',
+      left: '0',
+      borderTop: '1px solid rgb(37, 37, 37)'
+    }
+  },
+  musicDiv: {
+    src: 'music3.html',
+    className: 'frame',
+    id: 'frameMusic',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '0',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 15px 15px',
+      left: '0',
+      borderTop: '1px solid rgb(37, 37, 37)'
+    }
+  },
+  terminalDiv: {
+    src: 'terminal.html',
+    className: 'frame3',
+    id: 'frame3',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '10px',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 20px 20px',
+      left: '0',
+      bottom: '0'
+    }
+  },
+  searchDiv: {
+    src: 'https://862c58-8080.csb.app',
+    className: 'frame',
+    id: 'frame3',
+    styles: {
+      width: '100%',
+      height: '95.6%',
+      bottom: '0',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 15px 15px',
+      left: '0'
+    }
+  },
+  ChatDiv: {
+    src: 'chat4.html',
+    className: 'frame',
+    id: 'chatFrame',
+    styles: {
+      width: '100%',
+      height: '95%',
+      bottom: '0',
+      position: 'absolute',
+      border: 'none',
+      borderRadius: '0px 0px 20px 20px',
+      left: '0'
+    }
+  }
+};
+
+// Store original iframe HTML to restore later
+const iframeCache = {};
+
+// Save original iframes on page load
+document.addEventListener('DOMContentLoaded', () => {
+  Object.keys(IFRAME_CONFIGS).forEach(divId => {
+    const div = document.getElementById(divId);
+    const iframe = div?.querySelector('iframe');
+    if (iframe) {
+      iframeCache[divId] = {
+        element: iframe.cloneNode(true),
+        parent: iframe.parentElement
+      };
+    }
+  });
+});
+
+// Create iframe element with config
+function createIframe(divId) {
+  const config = IFRAME_CONFIGS[divId];
+  if (!config) return null;
+
+  const iframe = document.createElement('iframe');
+  iframe.src = config.src;
+  iframe.className = config.className;
+  if (config.id) iframe.id = config.id;
+  
+  // Apply styles
+  if (config.styles) {
+    Object.assign(iframe.style, config.styles);
+  }
+  
+  return iframe;
+}
+
+// Open div and restore/create iframe
+function openDiv(divId) {
+  const div = document.getElementById(divId);
+  if (!div) return;
+
+  // Check if iframe exists
+  let iframe = div.querySelector('iframe');
+  
+  // If no iframe, create one
+  if (!iframe && IFRAME_CONFIGS[divId]) {
+    iframe = createIframe(divId);
+    if (iframe) {
+      div.appendChild(iframe);
+    }
+  }
+
+  div.style.display = 'block';
+}
+
+// Close div and destroy iframe to free memory
+function closeDiv(divId) {
+  const div = document.getElementById(divId);
+  if (!div) return;
+
+  div.style.display = 'none';
+  
+  // Remove iframe after animation completes
+  setTimeout(() => {
+    if (div.style.display === 'none') {
+      const iframe = div.querySelector('iframe');
+      if (iframe) {
+        iframe.src = 'about:blank';
+        iframe.remove();
+      }
+    }
+  }, 300);
+}
+
+// Toggle div (open/close)
+function toggleDiv(divId) {
+  const div = document.getElementById(divId);
+  if (!div) return;
+
+  if (div.style.display === 'block') {
+    closeDiv(divId);
+  } else {
+    openDiv(divId);
+  }
+}
+
+// Global functions for onclick handlers
+window.t9 = () => toggleDiv('t9Div');
+window.ai = () => toggleDiv('aiDiv');
+window.movie = () => toggleDiv('movieDiv');
+window.music = () => toggleDiv('musicDiv');
+window.terminal = () => {
+  toggleDiv('terminalDiv');
+  closeDiv('t9Div');
+};
+window.s = () => toggleDiv('searchDiv');
+window.Chat = () => toggleDiv('ChatDiv');
+window.emulator = () => toggleDiv('emulatorDiv');
+window.apps = () => toggleDiv('appsDiv');
+window.settings = () => toggleDiv('settingsDiv');
+window.collab = () => toggleDiv('collabDiv');
+window.hacks = () => toggleDiv('hacksDiv');
+window.admin = () => toggleDiv('adminDiv');
+window.leader = () => toggleDiv('leaderboardDiv');
+window.sound = () => toggleDiv('soundDiv');
+
+// Fullscreen functions
+window.fullscreenIframe = () => fullscreenById('frame2');
+window.fullscreenIframe2 = () => fullscreenById('frame3');
+window.fullscreenIframe3 = () => fullscreenById('mframe');
+window.fullscreenIframeAI = () => fullscreenById('frame5');
+window.fullscreenIframeMusic = () => fullscreenById('frameMusic');
+
+function fullscreenById(iframeId) {
+  const iframe = document.getElementById(iframeId);
+  if (!iframe) return;
+  
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.mozRequestFullScreen) {
+    iframe.mozRequestFullScreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen();
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen();
+  }
+}
+
+// Setup close buttons
+document.addEventListener('DOMContentLoaded', () => {
+  // Handle all close buttons
+  document.querySelectorAll('.close-btn, .close-btn2').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const div = e.target.closest('[id$="Div"]');
+      if (div) closeDiv(div.id);
+    });
+  });
+
+  // Handle back button for games
+  const backBtn = document.querySelector('.back');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      const iframe = document.getElementById('frame2');
+      if (iframe) iframe.src = 'test99.html';
+    });
+  }
+
+  // Handle toggle div button (games)
+  const toggleBtn = document.getElementById('toggleDivButton');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => toggleDiv('hiddenDiv'));
+  }
+
+  // Close all hidden iframes when page is hidden (save resources)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      Object.keys(IFRAME_CONFIGS).forEach(divId => {
+        const div = document.getElementById(divId);
+        if (div && div.style.display !== 'block') {
+          const iframe = div.querySelector('iframe');
+          if (iframe) {
+            iframe.src = 'about:blank';
+            iframe.remove();
+          }
+        }
+      });
+    }
+  });
+});
+
+// Clean up iframes on page unload
+window.addEventListener('beforeunload', () => {
+  document.querySelectorAll('iframe').forEach(iframe => {
+    iframe.src = 'about:blank';
+  });
+});
+</script>
 
 
 
