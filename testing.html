@@ -1661,9 +1661,26 @@ backdrop-filter: blur(7px);
 <a   onclick="openGame()"  class="round-btn">Hide url</a>
 <a   onclick="toggleNavbar()" class="round-btn">Toggle navbar</a>
  <script>
+    // Load saved position on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      const navbar = document.querySelector('.navbar');
+      const savedPosition = localStorage.getItem('navbarPosition');
+      
+      if (savedPosition === 'sidebar') {
+        navbar.classList.add('sidebar');
+      }
+    });
+
     function toggleNavbar() {
       const navbar = document.querySelector('.navbar');
       navbar.classList.toggle('sidebar');
+      
+      // Save the current position
+      if (navbar.classList.contains('sidebar')) {
+        localStorage.setItem('navbarPosition', 'sidebar');
+      } else {
+        localStorage.setItem('navbarPosition', 'dock');
+      }
     }
   </script>
 
