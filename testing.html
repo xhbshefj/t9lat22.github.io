@@ -1414,69 +1414,6 @@ requestAnimationFrame(trackFPS);
     }
   </script>
  
-       <div id="context-menu">
-<div onclick="terminal()" class="item">⚙️Settings</div>
-<div class="item">🎮Games</div>
-<div class="item">🖥️Terminal</div>
-<div class="item">🤖AI</div>
-<div class="item">🔍Search</div>
-<div class="item">💬Chat</div>
-
-
-</div>
-
-<style>
-    #context-menu{
-        display:none;
-        position: absolute;
-        background-color:black;
-        color:white;
-        font-family: sans-serif;
-        padding:10px 20px;
-        width:105px;
-        height:210px;
-        overflow: hidden;
-        z-index: 9999;
-        border-radius:15px;
-        z-index: 2147483647;
-        pointer-events: auto;
-
-    }
-    .item{
-        padding:10px;
-        cursor: pointer;
-    transition: background 0.2s;
-    border-radius:10px;
-    font: bolder;
-        
-    }
-    .item:hover{
-        background-color:rgb(255, 255, 255);
-        color:black;
-    }
-
-</style>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const menu = document.getElementById("context-menu");
-
-    if (!menu) return; // safety guard
-
-    window.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      menu.style.display = "block";
-      menu.style.left = e.clientX + "px";
-      menu.style.top = e.clientY + "px";
-    }, true);
-
-    window.addEventListener("mousedown", () => {
-      menu.style.display = "none";
-    }, true);
-  });
-</script>
 
 </div>
 
