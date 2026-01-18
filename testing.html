@@ -74,18 +74,18 @@ color: white;
       bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      height: 64px;
+      height: 56px;
       background: linear-gradient(160deg,
         rgba(255,255,255,0.08),
         rgba(0,0,0,0.65)
       );
       border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 18px;
+      border-radius: 16px;
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 14px;
-      padding: 0 12px;
+      gap: 12px;
+      padding: 0 10px;
       backdrop-filter: blur(4px) saturate(140%);
       box-shadow:
         0 20px 40px rgba(0,0,0,.6),
@@ -97,16 +97,16 @@ color: white;
     }
 
     .navbar:hover {
-      height: 72px;
-      border-radius: 24px;
+      height: 64px;
+      border-radius: 20px;
       box-shadow:
         0 25px 60px rgba(0,0,0,.8),
         inset 0 1px 0 rgba(255,255,255,.3);
     }
 
     .navbar img {
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       transition: transform 0.15s ease;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,.6));
       cursor: pointer;
@@ -127,11 +127,6 @@ color: white;
       transition: box-shadow 0.2s ease;
       will-change: box-shadow;
     }
-
-    .navbar:hover::after {
-      box-shadow: 0 0 25px 6px rgba(0,180,255,.35);
-    }
-
 
 
 
