@@ -70,61 +70,68 @@ color: white;
 
   /* Navbar Styles */
 .navbar {
-  position: fixed;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  width: 64px;
-  background: linear-gradient(160deg,
-    rgba(255,255,255,0.08),
-    rgba(0,0,0,0.65)
-  );
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 0;
-  backdrop-filter: blur(4px) saturate(140%);
-  box-shadow:
-    0 20px 40px rgba(0,0,0,.6),
-    inset 0 1px 0 rgba(255,255,255,.2);
-  transition: 0.25s cubic-bezier(.2,.8,.2,1);
-  opacity: 0.92;
-  z-index: 9999;
-}
-.navbar:hover {
-  width: 72px;
-  border-radius: 24px;
-  box-shadow:
-    0 25px 60px rgba(0,0,0,.8),
-    inset 0 1px 0 rgba(255,255,255,.3);
-}
-.navbar img {
-  width: 34px;
-  height: 34px;
-  transition: 0.2s cubic-bezier(.2,.8,.2,1);
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,.6));
-}
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 64px;
+      background: linear-gradient(160deg,
+        rgba(255,255,255,0.08),
+        rgba(0,0,0,0.65)
+      );
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 14px;
+      padding: 0 12px;
+      backdrop-filter: blur(4px) saturate(140%);
+      box-shadow:
+        0 20px 40px rgba(0,0,0,.6),
+        inset 0 1px 0 rgba(255,255,255,.2);
+      transition: height 0.2s ease, border-radius 0.2s ease, box-shadow 0.2s ease;
+      opacity: 0.92;
+      z-index: 9999;
+      will-change: height, border-radius;
+    }
 
-.navbar img:hover {
-  transform: scale(1.25) translateX(3px);
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,.9));
-}
-.navbar::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: 0 0 0 0 rgba(0,180,255,.5);
-  transition: 0.3s;
-}
+    .navbar:hover {
+      height: 72px;
+      border-radius: 24px;
+      box-shadow:
+        0 25px 60px rgba(0,0,0,.8),
+        inset 0 1px 0 rgba(255,255,255,.3);
+    }
 
-.navbar:hover::after {
-  box-shadow: 0 0 25px 6px rgba(0,180,255,.35);
-}
+    .navbar img {
+      width: 34px;
+      height: 34px;
+      transition: transform 0.15s ease;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.6));
+      cursor: pointer;
+      will-change: transform;
+    }
+
+    .navbar img:hover {
+      transform: scale(1.25) translateY(-3px);
+    }
+
+    .navbar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: 0 0 0 0 rgba(0,180,255,.5);
+      transition: box-shadow 0.2s ease;
+      will-change: box-shadow;
+    }
+
+    .navbar:hover::after {
+      box-shadow: 0 0 25px 6px rgba(0,180,255,.35);
+    }
+
 
 
 
