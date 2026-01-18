@@ -1438,6 +1438,8 @@ requestAnimationFrame(trackFPS);
         overflow: hidden;
         z-index: 9999;
         border-radius:15px;
+        z-index: 2147483647;
+        pointer-events: auto;
 
     }
     .item{
@@ -1456,20 +1458,26 @@ requestAnimationFrame(trackFPS);
 </style>
 
 <script>
-  const menu = document.getElementById("context-menu");
+  document.addEventListener("DOMContentLoaded", () => {
+    const menu = document.getElementById("context-menu");
 
-  document.addEventListener("contextmenu", (e) => {
-    e.preventDefault();
+    if (!menu) return; // safety guard
 
-    menu.style.display = "block";
-    menu.style.left = e.pageX + "px";
-    menu.style.top = e.pageY + "px";
+    window.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      menu.style.display = "block";
+      menu.style.left = e.clientX + "px";
+      menu.style.top = e.clientY + "px";
+    }, true);
+
+    window.addEventListener("mousedown", () => {
+      menu.style.display = "none";
+    }, true);
   });
+</script>
 
-  document.addEventListener("click", () => {
-    menu.style.display = "none";
-  });
-</script>    
 </div>
 
 <div id="musicDiv">
