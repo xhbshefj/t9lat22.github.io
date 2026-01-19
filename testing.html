@@ -1672,17 +1672,64 @@ backdrop-filter: blur(7px);
 <a   onclick="toggleNavbar()" class="round-btn">Toggle navbar</a>
     <input type="color" id="picker" value="#333333">
         <script>
-        // Directly listening to the picker
-        document.getElementById('picker').addEventListener('input', function() {
-            
-            // The list of divs you want to change
-            const color = this.value;
+        // List of div IDs
+        const divIds = ['aiDiv', 'hiddenDiv', 'settingsDiv', 'widgetDiv', 'musicDiv', 'searchDiv', 'emulatorDiv', 'hacksDiv', 'movieDiv', 'terminalDiv', 'ChatDiv', 'updateDiv', 'collabDiv'];
 
-            document.getElementById('settingsDiv').style.backgroundColor = color;
-            document.getElementById('circle').style.backgroundColor = color;
-            document.getElementById('rect').style.backgroundColor = color;
-            
+        // Store each div's original colors when the page opens
+        const originalColors = {};
+        divIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                originalColors[id] = {
+                    bg: getComputedStyle(el).backgroundColor,
+                    border: getComputedStyle(el).borderColor
+                };
+            }
         });
+
+        // 1. Load saved progress from LocalStorage
+        window.addEventListener('load', () => {
+            const savedColor = localStorage.getItem('userColor');
+            if (savedColor) {
+                divIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.backgroundColor = savedColor;
+                        el.style.borderColor = savedColor;
+                    }
+                });
+                document.getElementById('picker').value = savedColor;
+            }
+        });
+
+        // 2. Change color for the list of divs
+        document.getElementById('picker').addEventListener('input', function() {
+            const newColor = this.value;
+
+            divIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.backgroundColor = newColor;
+                    el.style.borderColor = newColor;
+                }
+            });
+
+            localStorage.setItem('userColor', newColor);
+        });
+
+        // 3. Reset to "Normal" (Each div returns to its own original color)
+        document.getElementById('reset').addEventListener('click', () => {
+            divIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && originalColors[id]) {
+                    el.style.backgroundColor = originalColors[id].bg;
+                    el.style.borderColor = originalColors[id].border;
+                }
+            });
+
+            localStorage.removeItem('userColor');
+        });
+    
     </script>
 
  <script>
