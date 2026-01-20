@@ -1,5 +1,5 @@
 
-const API_KEYS_URL="https://groq-api-keys.pages.dev/apikeys.txt"
+const API_KEYS_URL="groqapi.txt"
 let apiKeys=[]
 let apiKeyIndex=parseInt(localStorage.getItem("apiKeyIndex")||"-1",10)
 async function initApiKeys(){
