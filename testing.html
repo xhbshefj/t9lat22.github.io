@@ -2584,10 +2584,12 @@ wins.forEach(win => {
       win.style.left=r.left+"px";win.style.top=r.top+"px";
       hasBeenPositioned=true;
     }
-    isResizing=true;disableIframeTemp();
+    isResizing=true;
+    disableIframeTemp(); // Disable iframes immediately
     startX=e.clientX;startY=e.clientY;
     startWidth=r.width;startHeight=r.height;
     win.style.width=startWidth+"px";win.style.height=startHeight+"px";
+    win.classList.add('resizing'); // Add class for tracking
     e.preventDefault();e.stopPropagation();
   });
 
@@ -2619,26 +2621,19 @@ wins.forEach(win => {
     if(isDragging || isResizing) {
       enableIframeTemp();
       dragHandle.style.pointerEvents="none";
+      win.classList.remove('resizing'); // Remove resizing class
       isDragging=false;
       isResizing=false;
       win.style.willChange="auto";
       
       // ✅ FIX: Ensure iframe position is correct after resize stops
       adjustIframePosition();
-      
-      // Prevent the event from continuing
-      if(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
     }
   }
   
-  // Use capture phase to catch events early
-  document.addEventListener("mouseup",stopAll, true);
-  window.addEventListener("mouseup",stopAll, true);
-  document.addEventListener("mouseleave",stopAll, true);
-  window.addEventListener("blur",stopAll, true);
+  document.addEventListener("mouseup", stopAll);
+  document.addEventListener("mouseleave", stopAll);
+  window.addEventListener("blur", stopAll);
   
   // ✅ FIX: Set initial iframe position when page loads
   adjustIframePosition();
