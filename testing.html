@@ -2510,10 +2510,16 @@ wins.forEach(win => {
     resizer = document.createElement("div");
     resizer.className = "resizer";
     Object.assign(resizer.style,{
-      position:"absolute",width:"30px",height:"30px",
-      right:"0",bottom:"0",cursor:"nwse-resize",zIndex:"99999", // Very high z-index
-      background:"rgba(255,255,255,0.1)",
-      pointerEvents:"auto" // Always clickable
+      position:"absolute",
+      width:"40px",  // Bigger hitbox
+      height:"40px", // Bigger hitbox
+      right:"0",
+      bottom:"0",
+      cursor:"nwse-resize",
+      zIndex:"99999",
+      background:"rgba(255,255,255,0.2)", // More visible
+      pointerEvents:"auto",
+      borderRadius:"0 0 12px 0" // Match corner
     });
     win.appendChild(resizer);
   }
@@ -2535,13 +2541,12 @@ wins.forEach(win => {
     });
   }
 
-  // ✅ NEW: Function to adjust iframe positioning based on div size
+  // ✅ Function to adjust iframe positioning based on div size
   function adjustIframePosition() {
     const iframes = win.querySelectorAll("iframe");
     
     iframes.forEach(iframe => {
-      // Keep iframe below the header area (where buttons are)
-      const headerHeight = 30; // Reduced space for buttons and title
+      const headerHeight = 30;
       
       iframe.style.position = "absolute";
       iframe.style.top = headerHeight + "px";
@@ -2550,12 +2555,15 @@ wins.forEach(win => {
       iframe.style.height = `calc(100% - ${headerHeight}px)`;
       iframe.style.border = "none";
       iframe.style.borderRadius = "0px 0px 12px 12px";
-      iframe.style.pointerEvents = "auto"; // Make sure iframe is always clickable by default
+      iframe.style.pointerEvents = "auto";
     });
   }
 
   // ───────── DRAG ─────────
   win.addEventListener("mousedown",e=>{
+    // Don't drag if clicking on resizer
+    if(e.target === resizer) return;
+    
     // Ignore clicks on buttons, links, inputs, etc.
     if(e.target.closest("button,a,input,select,textarea,iframe")) return;
     
@@ -2581,20 +2589,33 @@ wins.forEach(win => {
     e.preventDefault();
   });
 
-// ───────── RESIZE ─────────
-resizer.addEventListener("mousedown",e=>{
-const r=win.getBoundingClientRect();
-if(!hasBeenPositioned){
-win.style.transform="none";win.style.margin="0";win.style.inset="auto";
-win.style.left=r.left+"px";win.style.top=r.top+"px";
-hasBeenPositioned=true;
-}
-isResizing=true;disableIframeTemp();
-startX=e.clientX;startY=e.clientY;
-startWidth=r.width;startHeight=r.height;
-win.style.width=startWidth+"px";win.style.height=startHeight+"px";
-e.preventDefault();e.stopPropagation();
-});
+  // ───────── RESIZE ─────────
+  resizer.addEventListener("mousedown",e=>{
+    const r=win.getBoundingClientRect();
+    if(!hasBeenPositioned){
+      win.style.transform="none";
+      win.style.margin="0";
+      win.style.inset="auto";
+      win.style.left=r.left+"px";
+      win.style.top=r.top+"px";
+      hasBeenPositioned=true;
+    }
+    
+    isResizing=true;
+    disableIframeTemp(); // Disable iframes immediately
+    startX=e.clientX;
+    startY=e.clientY;
+    startWidth=r.width;
+    startHeight=r.height;
+    win.style.width=startWidth+"px";
+    win.style.height=startHeight+"px";
+    
+    // Highlight resizer during resize
+    resizer.style.background="rgba(255,255,255,0.5)";
+    
+    e.preventDefault();
+    e.stopPropagation();
+  });
 
   // ───────── MOVE ─────────
   document.addEventListener("mousemove",e=>{
@@ -2614,35 +2635,34 @@ e.preventDefault();e.stopPropagation();
       win.style.width=Math.max(minWidth,startWidth+dx)+"px";
       win.style.height=Math.max(minHeight,startHeight+dy)+"px";
       
-      // ✅ FIX: Adjust iframe position during resize
       adjustIframePosition();
     }
   });
 
-  // ───────── FORCE UNFREEZE ─────────
-  function stopAll(e){
+  // ───────── STOP ─────────
+  function stopAll(){
     if(isDragging || isResizing) {
       enableIframeTemp();
       dragHandle.style.pointerEvents="none";
-      win.classList.remove('resizing'); // Remove resizing class
+      
+      // Reset resizer appearance
+      resizer.style.background="rgba(255,255,255,0.2)";
+      
       isDragging=false;
       isResizing=false;
       win.style.willChange="auto";
       
-      // ✅ FIX: Ensure iframe position is correct after resize stops
       adjustIframePosition();
     }
   }
   
   document.addEventListener("mouseup", stopAll);
-  document.addEventListener("mouseleave", stopAll);
-  window.addEventListener("blur", stopAll);
   
-  // ✅ FIX: Set initial iframe position when page loads
+  // ✅ Set initial iframe position when page loads
   adjustIframePosition();
 });
 </script>
-<!--Fixwd2-->
+<!--Fixwd 3-->
 
 
 
