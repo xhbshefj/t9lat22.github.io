@@ -2477,7 +2477,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--test2-->
 
 <script>
-  const wins = [
+const wins = [
   document.getElementById("hiddenDiv"),
   document.getElementById("ChatDiv"),
   document.getElementById("musicDiv"),
@@ -2537,7 +2537,6 @@ wins.forEach(win => {
   // ✅ NEW: Function to adjust iframe positioning based on div size
   function adjustIframePosition() {
     const iframes = win.querySelectorAll("iframe");
-    const rect = win.getBoundingClientRect();
     
     iframes.forEach(iframe => {
       // Keep iframe below the header area (where buttons are)
@@ -2550,13 +2549,18 @@ wins.forEach(win => {
       iframe.style.height = `calc(100% - ${headerHeight}px)`;
       iframe.style.border = "none";
       iframe.style.borderRadius = "0px 0px 12px 12px";
+      iframe.style.pointerEvents = "auto"; // Make sure iframe is always clickable by default
     });
   }
 
   // ───────── DRAG ─────────
   win.addEventListener("mousedown",e=>{
-    if(e.target.closest("button,a,input,select,textarea")) return;
+    // Ignore clicks on buttons, links, inputs, etc.
+    if(e.target.closest("button,a,input,select,textarea,iframe")) return;
+    
     const r=win.getBoundingClientRect();
+    
+    // Only allow dragging from the top 40px area (header)
     if(e.clientY-r.top>40||isResizing) return;
 
     if(!hasBeenPositioned){
@@ -2566,8 +2570,6 @@ wins.forEach(win => {
       win.style.left=r.left+"px";
       win.style.top=r.top+"px";
       hasBeenPositioned=true;
-      // Don't start dragging on first click, just position
-      return;
     }
 
     isDragging=true;
@@ -2641,6 +2643,7 @@ wins.forEach(win => {
   adjustIframePosition();
 });
 </script>
+<!--Fixwd-->
 
 
 
