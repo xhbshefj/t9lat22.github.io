@@ -2477,7 +2477,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--test2-->
 
 <script>
-  const wins = [
+const wins = [
   document.getElementById("hiddenDiv"),
   document.getElementById("ChatDiv"),
   document.getElementById("musicDiv"),
@@ -2615,18 +2615,30 @@ wins.forEach(win => {
   });
 
   // ───────── FORCE UNFREEZE ─────────
-  function stopAll(){
-    enableIframeTemp();
-    dragHandle.style.pointerEvents="none";
-    isDragging=false;isResizing=false;
-    win.style.willChange="auto";
-    
-    // ✅ FIX: Ensure iframe position is correct after resize stops
-    adjustIframePosition();
+  function stopAll(e){
+    if(isDragging || isResizing) {
+      enableIframeTemp();
+      dragHandle.style.pointerEvents="none";
+      isDragging=false;
+      isResizing=false;
+      win.style.willChange="auto";
+      
+      // ✅ FIX: Ensure iframe position is correct after resize stops
+      adjustIframePosition();
+      
+      // Prevent the event from continuing
+      if(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
   }
-  document.addEventListener("mouseup",stopAll);
-  document.addEventListener("mouseleave",stopAll);
-  window.addEventListener("blur",stopAll);
+  
+  // Use capture phase to catch events early
+  document.addEventListener("mouseup",stopAll, true);
+  window.addEventListener("mouseup",stopAll, true);
+  document.addEventListener("mouseleave",stopAll, true);
+  window.addEventListener("blur",stopAll, true);
   
   // ✅ FIX: Set initial iframe position when page loads
   adjustIframePosition();
