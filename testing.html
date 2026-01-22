@@ -2477,6 +2477,17 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--test2-->
 
 <script>
+// 1. Create a global "Shield" once (hidden by default)
+const shield = document.createElement("div");
+Object.assign(shield.style, {
+  position: "fixed",
+  top: 0, left: 0, right: 0, bottom: 0,
+  zIndex: "999999", // Above everything
+  display: "none",
+  cursor: "nwse-resize" // Changes dynamically
+});
+document.body.appendChild(shield);
+
 const wins = [
   document.getElementById("hiddenDiv"),
   document.getElementById("ChatDiv"),
@@ -2487,19 +2498,17 @@ const wins = [
   document.getElementById("terminalDiv"),
   document.getElementById("emulatorDiv"),
   document.getElementById("movieDiv")
-];
+].filter(win => win !== null); // Remove nulls immediately
 
 wins.forEach(win => {
-  if (!win) return;
-
   // ───────── Drag handle ─────────
   let dragHandle = win.querySelector(".drag-handle");
   if (!dragHandle) {
     dragHandle = document.createElement("div");
     dragHandle.className = "drag-handle";
-    Object.assign(dragHandle.style,{
-      position:"absolute",top:"0",left:"50px",right:"0",
-      height:"40px",cursor:"move",zIndex:"5",pointerEvents:"none"
+    Object.assign(dragHandle.style, {
+      position: "absolute", top: "0", left: "50px", right: "0",
+      height: "40px", cursor: "move", zIndex: "5"
     });
     win.appendChild(dragHandle);
   }
@@ -2509,157 +2518,100 @@ wins.forEach(win => {
   if (!resizer) {
     resizer = document.createElement("div");
     resizer.className = "resizer";
-    Object.assign(resizer.style,{
-      position:"absolute",
-      width:"40px",  // Bigger hitbox
-      height:"40px", // Bigger hitbox
-      right:"0",
-      bottom:"0",
-      cursor:"nwse-resize",
-      zIndex:"99999",
-      background:"rgba(255,255,255,0.2)", // More visible
-      pointerEvents:"auto",
-      borderRadius:"0 0 12px 0" // Match corner
+    Object.assign(resizer.style, {
+      position: "absolute",
+      width: "30px", height: "30px",
+      right: "0", bottom: "0",
+      cursor: "nwse-resize",
+      zIndex: "10",
+      background: "rgba(255,255,255,0.1)", 
+      pointerEvents: "auto",
+      borderRadius: "0 0 12px 0"
     });
     win.appendChild(resizer);
   }
 
-  let isDragging=false,isResizing=false,offsetX=0,offsetY=0,
-      startX=0,startY=0,startWidth=0,startHeight=0,hasBeenPositioned=false;
+  let isDragging = false, isResizing = false;
+  let offsetX, offsetY, startX, startY, startWidth, startHeight, hasBeenPositioned = false;
 
-  // 🔒 SAFE iframe control
-  function disableIframeTemp(){
-    win.querySelectorAll("iframe").forEach(i=>{
-      i.dataset._pe=i.style.pointerEvents;
-      i.style.pointerEvents="none";
-    });
-  }
-  function enableIframeTemp(){
-    win.querySelectorAll("iframe").forEach(i=>{
-      i.style.pointerEvents=i.dataset._pe||"auto";
-      delete i.dataset._pe;
-    });
-  }
-
-  // ✅ Function to adjust iframe positioning based on div size
-  function adjustIframePosition() {
-    const iframes = win.querySelectorAll("iframe");
-    
-    iframes.forEach(iframe => {
-      const headerHeight = 30;
-      
-      iframe.style.position = "absolute";
-      iframe.style.top = headerHeight + "px";
-      iframe.style.left = "0";
-      iframe.style.width = "100%";
-      iframe.style.height = `calc(100% - ${headerHeight}px)`;
-      iframe.style.border = "none";
-      iframe.style.borderRadius = "0px 0px 12px 12px";
-      iframe.style.pointerEvents = "auto";
-    });
+  // Initial positioning logic
+  function ensurePositioned() {
+    if (!hasBeenPositioned) {
+      const r = win.getBoundingClientRect();
+      win.style.transform = "none";
+      win.style.margin = "0";
+      win.style.inset = "auto";
+      win.style.left = r.left + "px";
+      win.style.top = r.top + "px";
+      win.style.width = r.width + "px";
+      win.style.height = r.height + "px";
+      hasBeenPositioned = true;
+    }
   }
 
-  // ───────── DRAG ─────────
-  win.addEventListener("mousedown",e=>{
-    // Don't drag if clicking on resizer
-    if(e.target === resizer) return;
-    
-    // Ignore clicks on buttons, links, inputs, etc.
-    if(e.target.closest("button,a,input,select,textarea,iframe")) return;
-    
-    const r=win.getBoundingClientRect();
-    
-    // Only allow dragging from the top 40px area (header)
-    if(e.clientY-r.top>40||isResizing) return;
+  // ───────── MOUSE DOWN ─────────
+  win.addEventListener("mousedown", e => {
+    // Bring window to front
+    wins.forEach(w => w.style.zIndex = "100");
+    win.style.zIndex = "101";
 
-    if(!hasBeenPositioned){
-      win.style.transform="none";
-      win.style.margin="0";
-      win.style.inset="auto";
-      win.style.left=r.left+"px";
-      win.style.top=r.top+"px";
-      hasBeenPositioned=true;
-    }
+    const r = win.getBoundingClientRect();
 
-    isDragging=true;
-    offsetX=e.clientX-r.left;
-    offsetY=e.clientY-r.top;
-    disableIframeTemp();
-    dragHandle.style.pointerEvents="auto";
-    e.preventDefault();
-  });
-
-  // ───────── RESIZE ─────────
-  resizer.addEventListener("mousedown",e=>{
-    const r=win.getBoundingClientRect();
-    if(!hasBeenPositioned){
-      win.style.transform="none";
-      win.style.margin="0";
-      win.style.inset="auto";
-      win.style.left=r.left+"px";
-      win.style.top=r.top+"px";
-      hasBeenPositioned=true;
-    }
-    
-    isResizing=true;
-    disableIframeTemp(); // Disable iframes immediately
-    startX=e.clientX;
-    startY=e.clientY;
-    startWidth=r.width;
-    startHeight=r.height;
-    win.style.width=startWidth+"px";
-    win.style.height=startHeight+"px";
-    
-    // Highlight resizer during resize
-    resizer.style.background="rgba(255,255,255,0.5)";
-    
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  // ───────── MOVE ─────────
-  document.addEventListener("mousemove",e=>{
-    if(isDragging){
-      let x=e.clientX-offsetX;
-      let y=e.clientY-offsetY;
-      win.style.left=x+"px";
-      win.style.top=y+"px";
-      if(win.id==="hiddenDiv") win.style.willChange="transform";
-    }
-    if(isResizing){
-      const dx=e.clientX-startX;
-      const dy=e.clientY-startY;
-      const minWidth = 300;
-      const minHeight = 200;
+    // START RESIZING
+    if (e.target === resizer) {
+      isResizing = true;
+      ensurePositioned();
+      startX = e.clientX;
+      startY = e.clientY;
+      startWidth = r.width;
+      startHeight = r.height;
       
-      win.style.width=Math.max(minWidth,startWidth+dx)+"px";
-      win.style.height=Math.max(minHeight,startHeight+dy)+"px";
+      // Activate Shield
+      shield.style.display = "block";
+      shield.style.cursor = "nwse-resize";
       
-      adjustIframePosition();
+      e.preventDefault();
+      return;
+    }
+
+    // START DRAGGING (only from header area)
+    if (e.clientY - r.top <= 40 && !e.target.closest("button, a, input")) {
+      isDragging = true;
+      ensurePositioned();
+      offsetX = e.clientX - r.left;
+      offsetY = e.clientY - r.top;
+      
+      // Activate Shield
+      shield.style.display = "block";
+      shield.style.cursor = "move";
+      
+      e.preventDefault();
     }
   });
 
-  // ───────── STOP ─────────
-  function stopAll(){
-    if(isDragging || isResizing) {
-      enableIframeTemp();
-      dragHandle.style.pointerEvents="none";
-      
-      // Reset resizer appearance
-      resizer.style.background="rgba(255,255,255,0.2)";
-      
-      isDragging=false;
-      isResizing=false;
-      win.style.willChange="auto";
-      
-      adjustIframePosition();
+  // ───────── MOVE (Global) ─────────
+  document.addEventListener("mousemove", e => {
+    if (isDragging) {
+      win.style.left = (e.clientX - offsetX) + "px";
+      win.style.top = (e.clientY - offsetY) + "px";
     }
-  }
-  
-  document.addEventListener("mouseup", stopAll);
-  
-  // ✅ Set initial iframe position when page loads
-  adjustIframePosition();
+    
+    if (isResizing) {
+      const newWidth = Math.max(300, startWidth + (e.clientX - startX));
+      const newHeight = Math.max(200, startHeight + (e.clientY - startY));
+      win.style.width = newWidth + "px";
+      win.style.height = newHeight + "px";
+    }
+  });
+
+  // ───────── STOP (Global) ─────────
+  document.addEventListener("mouseup", () => {
+    if (isDragging || isResizing) {
+      isDragging = false;
+      isResizing = false;
+      shield.style.display = "none"; // Hide shield
+    }
+  });
 });
 </script>
 <!--Fixwd 3-->
