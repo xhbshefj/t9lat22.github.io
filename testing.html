@@ -494,19 +494,19 @@ background-color: rgba(5, 139, 196, 0.504);
     margin-top: 20px;
     padding: 10px;
 background-color: rgba(5, 139, 196, 0.504);
-  border: 1px solid rgba(0,180,255,.5); 
+  border: 1px solid rgba(0,180,255,.5);
     color: white;
     inset: 0;
     margin:auto;
     position: fixed;
     z-index: 1000;
-    border-radius:20px; 
-    opacity:85%; 
-    width:600px;
-    height: 500px; 
+    border-radius:12px; 
+    width:75%;
+    height: 73%; 
     overflow-x: hidden;
     overflow-y: auto;
-      animation: popIn 0.5s ease-out forwards;
+box-shadow: 2px #141414;
+      animation: popIn2 0.5s ease-out forwards;
 
   }
   #searchDiv {
@@ -1084,42 +1084,7 @@ background-color: rgba(5, 139, 196, 0.504);
   }
 </script>
 
-<div id="emulatorDiv">
-  <button class="close-btn" onclick="document.getElementById('emulatorDiv').style.display = 'none';">×</button>
-  <h1 class="gtext">| Apps |</h1>
-  <p color="white" style="text-align: center;"></p>
 
-  
-           <a href='/windows11.html'>
-     <img class="btn" src="windows11.png">
-          </a>
-        
-           <a href='/emulatorjs.html'>
-     <img class="btn" src="emulatorjs.png">
-          </a>
-
-           <a href='/webretro.html'>
-     <img class="btn" src="emulator.png">
-          </a>
-
-          
-           <a href='/music.html'>
-     <img class="btn" src="music2.png">
-          </a>
-
-              <a href='/yt.html'>
-     <img class="btn" src="yt.png">
-          </a>
-        
-
-
-        
-     
-        
-       
-
-          
-</div>
 
 <script>
   function terminal(){
@@ -1323,6 +1288,65 @@ transform: translateX(-50%);
   
  
 </style>
+
+</div>
+<div id="emulatorDiv">
+<button class="close-btn" onclick="document.getElementById('emulatorDiv').style.display = 'none';">●</button>
+    <button class="full-btn" onclick="fullscreenIframea()">●</button>
+
+  <button class="back" style="top:7px; left: 50px; position: fixed; color:white;"    onclick="document.getElementById('framea').src = 'a.html';">←</button>
+<h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);      " >Apps</h3>
+
+ 
+
+
+
+<iframe id="frame2" src="a.html"></iframe>
+  <style>
+    #framea{
+      width:100%;
+      height:95%;
+      bottom:0;
+      position: absolute;
+      border:none;
+      border-radius:0px 0px 12px 12px;
+      left:0;
+      border-top: 1px solid rgb(37, 37, 37);
+    }
+    .back {
+    background: none;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    font-size:20px;
+        transform: translateY(2px);
+        top:-2px;
+
+}
+
+  </style>
+
+
+
+  <script>
+    function fullscreenIframea() {
+      let iframe = document.getElementById("framea");
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.mozRequestFullScreen) { 
+        iframe.mozRequestFullScreen();
+      } else if (iframe.webkitRequestFullscreen) { 
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { 
+        iframe.msRequestFullscreen();
+      }
+    }
+  </script>
+ 
+
+</div>
 
 <button onclick="t9()" style="position: fixed; bottom:0; right:0; padding:10px 20px; opacity: 0;"></button>
    
