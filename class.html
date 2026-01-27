@@ -20,15 +20,20 @@
 </head>
 <body>
     <iframe src="start.html"></iframe>
-    <script>
+ 
+<script>
   function setFavicon(url) {
-    let icon = document.querySelector("link[rel='icon']");
-    if (!icon) {
-      icon = document.createElement("link");
-      icon.rel = "icon";
-      document.head.appendChild(icon);
-    }
-    icon.href = url;
+    // Remove ALL existing favicons
+    document.querySelectorAll("link[rel*='icon']").forEach(e => e.remove());
+
+    const icon = document.createElement("link");
+    icon.rel = "icon";
+    icon.type = "image/png";
+
+    // Cache buster so browser is forced to reload
+    icon.href = url + "?v=" + Date.now();
+
+    document.head.appendChild(icon);
   }
 
   function applyCloak(preset) {
@@ -51,7 +56,7 @@
       case "default":
       default:
         document.title = "T9 OS";
-        setFavicon("/favicon.ico"); // your site icon
+        setFavicon("/favicon.ico");
         break;
     }
   }
@@ -62,8 +67,6 @@
     applyCloak(preset);
   });
 </script>
-
-    </script>
   
 
 </body>
