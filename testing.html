@@ -946,45 +946,48 @@ loadWidgetWeather();
 
 </div>
 
-<div id="ChatDiv">
+<div id="musicDiv">
   <button class="close-btn" onclick="document.getElementById('ChatDiv').style.display = 'none';">●</button>
+    <button class="full-btn" onclick="fullscreenIframechat()">●</button>
 
-
+<h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);      " >Chat</h3>
  
-<iframe class="frame" src="chat3.html"></iframe>
+
+
+
+<iframe id="framechat" src="chat3.html"></iframe>
   <style>
-    .frame{
+    #framechat{
       width:100%;
       height:95%;
       bottom:0;
       position: absolute;
       border:none;
-      border-radius:0px 0px 20px 20px;
+      border-radius:0px 0px 15px 15px;
       left:0;
+      border-top: 1px solid rgb(37, 37, 37);
     }
-     #ChatDiv {
-    display: none;
-    margin-top: 20px;
-    padding: 10px;
-background-color: rgba(5, 139, 196, 0.504);
-  border: 1px solid rgba(0,180,255,.5); 
-    color: white;
-    inset: 0;
-    margin:auto;
-    position: fixed;
-    z-index: 1000;
-    border-radius:12px; 
-    opacity:85%; 
-    width:85%;
-    height: 73%; 
-    overflow-x: hidden;
-    overflow-y: auto;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.589);
-
-      animation: popIn 0.5s ease-out forwards;
-
-  }
+  
   </style>
+
+
+
+    <script>
+    function fullscreenIframechat() {
+      let iframe = document.getElementById("framechat");
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.mozRequestFullScreen) { 
+        iframe.mozRequestFullScreen();
+      } else if (iframe.webkitRequestFullscreen) { 
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { 
+        iframe.msRequestFullscreen();
+      }
+    }
+  </script>
+
+
  
            
 </div>
@@ -1410,22 +1413,22 @@ transform: translateX(-50%);
     display: none;
     margin-top: 20px;
     padding: 10px;
-     background: rgba(0,0,0,0.4);   
-backdrop-filter: blur(7px);   
+background-color: rgba(5, 139, 196, 0.504);
+  border: 1px solid rgba(0,180,255,.5);
     color: white;
     inset: 0;
     margin:auto;
     position: fixed;
     z-index: 1000;
-    border-radius:20px; 
-    opacity:85%; 
-    width:85%;
+    border-radius:12px; 
+    width:75%;
     height: 73%; 
     overflow-x: hidden;
     overflow-y: auto;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+box-shadow: 2px #141414;
+      animation: popIn2 0.5s ease-out forwards;
 
-      animation: popIn 0.5s ease-out forwards;
+  
 
   }
   </style>
