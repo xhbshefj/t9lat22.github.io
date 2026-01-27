@@ -1851,18 +1851,17 @@ requestAnimationFrame(trackFPS);
 
 
 <script>
-    const presetSelect = document.getElementById("preset");
+  const presetSelect = document.getElementById("preset");
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const saved = localStorage.getItem("cloak_preset") || "default";
-      presetSelect.value = saved;
-    });
+  window.addEventListener("DOMContentLoaded", () => {
+    presetSelect.value = localStorage.getItem("cloak_preset") || "default";
+  });
 
-    presetSelect.addEventListener("change", () => {
-      localStorage.setItem("cloak_preset", presetSelect.value);
-      console.log("✅ Preset saved:", presetSelect.value);
-    });
-  </script>
+  presetSelect.addEventListener("change", () => {
+    localStorage.setItem("cloak_preset", presetSelect.value);
+    console.log("✅ Preset saved:", presetSelect.value);
+  });
+</script>
 
 <script>
   // If no background is saved yet, set default
