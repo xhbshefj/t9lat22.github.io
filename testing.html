@@ -1775,11 +1775,14 @@ requestAnimationFrame(trackFPS);
   
 <a   onclick="openGame()"  class="round-btn">Hide url</a>
 <a   onclick="toggleNavbar()" class="round-btn">Toggle navbar</a>
-<a   id="reset" class="round-btn">Reset theme</a>
+<h2 style="text-align: center;">Appearances</h2>
 
     <label class="label" for="picker">Select theme:</label>
+        <input type="color" id="picker" value="#333333">
 
-    <input type="color" id="picker" value="#333333">
+    <a   id="reset" class="round-btn">Reset theme</a>
+
+
         <script>
     // List of div IDs
     const divIds = ['aiDiv', 'hiddenDiv', 'settingsDiv', 'widgetDiv', 'musicDiv', 'searchDiv', 'emulatorDiv', 'hacksDiv', 'movieDiv', 'terminalDiv', 'ChatDiv', 'updateDiv', 'collabDiv', 'tnav', 'navbar', 'roDiv'];
