@@ -1905,14 +1905,12 @@ let draggingIcon = null;
 let mouseOffset = { x: 0, y: 0 };
 let mouseStart = { x: 0, y: 0 };
 let isDragging = false;
-const dragThreshold = 5; // pixels to start drag
+const dragThreshold = 5; 
 
-// Snap to grid
 function snap(value) {
   return Math.round(value / gridSize) * gridSize;
 }
 
-// Check if spot is occupied
 function isOccupied(x, y, ignoreIcon = null) {
   for (const ic of icons) {
     if (ic === ignoreIcon) continue;
@@ -1923,10 +1921,9 @@ function isOccupied(x, y, ignoreIcon = null) {
   return false;
 }
 
-// ----- Icon mousedown -----
 icons.forEach(icon => {
   icon.addEventListener('mousedown', (e) => {
-    e.preventDefault();
+    // Don't preventDefault here or you might break other interactions
     draggingIcon = icon;
     mouseStart = { x: e.clientX, y: e.clientY };
 
@@ -1935,24 +1932,17 @@ icons.forEach(icon => {
     mouseOffset.y = e.clientY - rect.top;
 
     icon.style.zIndex = 1000;
-    isDragging = false; // will only become true if moved
   });
 
-  // Store original onclick
-  const originalOnClick = icon.onclick;
-
-  icon.onclick = function(e) {
+  // Intercept the click event specifically
+  icon.addEventListener('click', (e) => {
     if (isDragging) {
       e.stopImmediatePropagation();
-      e.preventDefault(); // cancel click if dragging
-      return false;
+      e.preventDefault();
     }
-    // Run original click if it exists
-    if (originalOnClick) originalOnClick.call(this, e);
-  }
+  }, true); // Use 'true' for the capture phase to catch it early
 });
 
-// ----- Mouse move -----
 document.addEventListener('mousemove', (e) => {
   if (!draggingIcon) return;
 
@@ -1977,7 +1967,6 @@ document.addEventListener('mousemove', (e) => {
   draggingIcon.style.top = newY + 'px';
 });
 
-// ----- Mouse up -----
 document.addEventListener('mouseup', () => {
   if (!draggingIcon) return;
 
@@ -1986,21 +1975,26 @@ document.addEventListener('mouseup', () => {
     let snappedY = snap(draggingIcon.offsetTop);
 
     if (isOccupied(snappedX, snappedY, draggingIcon)) {
-      // Return to previous position if occupied
-      draggingIcon.style.left = snap(draggingIcon.offsetLeft - mouseOffset.x) + 'px';
-      draggingIcon.style.top = snap(draggingIcon.offsetTop - mouseOffset.y) + 'px';
+      // Simple return to snapped original if occupied
+      draggingIcon.style.left = snap(mouseStart.x - mouseOffset.x) + 'px';
+      draggingIcon.style.top = snap(mouseStart.y - mouseOffset.y) + 'px';
     } else {
       draggingIcon.style.left = snappedX + 'px';
       draggingIcon.style.top = snappedY + 'px';
     }
+    
+    // THE FIX: Wait until the click event finishes before resetting isDragging
+    setTimeout(() => {
+      isDragging = false;
+    }, 50); 
+  } else {
+    isDragging = false;
   }
 
   draggingIcon.style.zIndex = '';
   draggingIcon = null;
-  isDragging = false;
 });
 
-// Prevent text selection
 document.addEventListener('selectstart', e => e.preventDefault());
 </script>
 
