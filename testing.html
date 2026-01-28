@@ -1976,8 +1976,9 @@ requestAnimationFrame(trackFPS);
 <script>
 const icons = document.querySelectorAll('.icon');
 const gridSize = 100;
-const offsetX = 5;  // Matches your HTML left: 5px
-const offsetY = 20; // Matches your HTML top: 120px/220px grid logic
+const offsetX = 5; 
+const offsetY = 20; 
+const NAVBAR_WIDTH = 70; // Adjust this to the actual width of your navbar
 
 let draggingIcon = null;
 let mouseOffset = { x: 0, y: 0 };
@@ -1985,11 +1986,9 @@ let mouseStart = { x: 0, y: 0 };
 let isDragging = false;
 const dragThreshold = 5;
 
-// Precision snapping functions
 const snapX = (v) => Math.round((v - offsetX) / gridSize) * gridSize + offsetX;
 const snapY = (v) => Math.round((v - offsetY) / gridSize) * gridSize + offsetY;
 
-// Check for collisions using snapped coordinates
 function isOccupied(x, y, ignore) {
   return Array.from(icons).some(ic => 
     ic !== ignore && 
@@ -2007,28 +2006,21 @@ icons.forEach(icon => {
     icon.style.zIndex = 1000;
   });
 
-  // Captures and blocks the click if the mouse moved (dragging)
   icon.addEventListener('click', (e) => {
     if (isDragging) {
       e.stopImmediatePropagation();
       e.preventDefault();
     }
-  }, true); 
+  }, true);
 });
 
 document.addEventListener('mousemove', (e) => {
   if (!draggingIcon) return;
-
   const dx = e.clientX - mouseStart.x;
   const dy = e.clientY - mouseStart.y;
-
-  if (!isDragging && Math.hypot(dx, dy) > dragThreshold) {
-    isDragging = true;
-  }
-
+  if (!isDragging && Math.hypot(dx, dy) > dragThreshold) isDragging = true;
   if (!isDragging) return;
 
-  // Real-time movement logic
   let x = Math.min(Math.max(e.clientX - mouseOffset.x, 0), window.innerWidth - draggingIcon.offsetWidth);
   let y = Math.min(Math.max(e.clientY - mouseOffset.y, 0), window.innerHeight - draggingIcon.offsetHeight);
 
@@ -2040,20 +2032,24 @@ document.addEventListener('mouseup', () => {
   if (!draggingIcon) return;
 
   if (isDragging) {
-    const targetX = snapX(draggingIcon.offsetLeft);
-    const targetY = snapY(draggingIcon.offsetTop);
+    let targetX = snapX(draggingIcon.offsetLeft);
+    let targetY = snapY(draggingIcon.offsetTop);
 
-    if (isOccupied(targetX, targetY, draggingIcon)) {
-      // Snap back to original grid spot if blocked
-      draggingIcon.style.left = snapX(mouseStart.x - mouseOffset.x) + 'px';
-      draggingIcon.style.top = snapY(mouseStart.y - mouseOffset.y) + 'px';
-    } else {
-      // Lock into new grid spot
-      draggingIcon.style.left = targetX + 'px';
-      draggingIcon.style.top = targetY + 'px';
+    // Collision Logic: Navbar and other icons
+    // If it touches the navbar (left side) or another icon, move 10px right until clear
+    while (targetX < NAVBAR_WIDTH || isOccupied(targetX, targetY, draggingIcon)) {
+      targetX += 10;
+      
+      // Safety break to prevent infinite loop if screen is full
+      if (targetX > window.innerWidth - draggingIcon.offsetWidth) {
+          targetX = offsetX; // Reset to start or handle overflow
+          break;
+      }
     }
 
-    // Delay resetting the flag so 'click' event doesn't trigger 's()'
+    draggingIcon.style.left = targetX + 'px';
+    draggingIcon.style.top = targetY + 'px';
+
     setTimeout(() => { isDragging = false; }, 50);
   }
 
