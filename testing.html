@@ -325,6 +325,26 @@ box-shadow: 2px #141414;
       animation: popIn2 0.5s ease-out forwards;
 
   }
+    #roDiv {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+background-color: rgba(5, 139, 196, 0.504);
+  border: 1px solid rgba(0,180,255,.5);   
+    color: white;
+    inset: 0;
+    margin:auto;
+    position: fixed;
+    z-index: 1000;
+    border-radius:12px; 
+    width:75%;
+    height: 73%; 
+    overflow-x: hidden;
+    overflow-y: auto;
+box-shadow: 2px #141414;
+      animation: popIn2 0.5s ease-out forwards;
+
+  }
     #t9Div {
     display: none;
     margin-top: 20px;
@@ -1471,6 +1491,51 @@ requestAnimationFrame(trackFPS);
  
 
 </div>
+<div id="roDiv">
+  <button class="close-btn" onclick="document.getElementById('roDiv').style.display = 'none';">●</button>
+    <button class="full-btn" onclick="fullscreenIframeRo()">●</button>
+
+<h3 style="  left: 50%; color:white; top:-9.5px; position: absolute;   transform: translateX(-50%);      " >Roblox</h3>
+ 
+
+
+
+<iframe id="frameRo" src="test33.html"></iframe>
+  <style>
+    #frameRo{
+      width:100%;
+      height:95%;
+      bottom:0;
+      position: absolute;
+      border:none;
+      border-radius:0px 0px 15px 15px;
+      left:0;
+      border-top: 1px solid rgb(37, 37, 37);
+    }
+  
+  </style>
+
+
+
+    <script>
+    function fullscreenIframeRo() {
+      let iframe = document.getElementById("frameRo");
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.mozRequestFullScreen) { 
+        iframe.mozRequestFullScreen();
+      } else if (iframe.webkitRequestFullscreen) { 
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { 
+        iframe.msRequestFullscreen();
+      }
+    }
+  </script>
+
+
+ 
+           
+</div>
 
 <div id="musicDiv">
   <button class="close-btn" onclick="document.getElementById('musicDiv').style.display = 'none';">●</button>
@@ -1656,7 +1721,7 @@ requestAnimationFrame(trackFPS);
 
 
 <div id="settingsDiv">
-  <button class="close-btn" onclick="document.getElementById('settingsDiv').style.display = 'none';">×</button>
+  <button class="close-btn" onclick="document.getElementById('settingsDiv').style.display = 'none';">●</button>
 
   <h1 class="seth">|| Settings ||</h1>
 
@@ -1894,6 +1959,10 @@ requestAnimationFrame(trackFPS);
   <div onclick="settings()" class="icon" style="left:5px; top:220px;">
     <img src="seting.png" alt="settings">
     <span>Settings</span>
+  </div>
+    <div onclick="ro()" class="icon" style="left:5px; top:220px;">
+    <img src="r2.png" alt="roblox">
+    <span>Roblox</span>
   </div>
 
 
@@ -2210,6 +2279,12 @@ document.addEventListener('selectstart', e => e.preventDefault());
 <script>
   function s(){
     const div = document.getElementById('searchDiv');
+    div.style.display = div.style.display === 'block' ? 'none' : 'block';
+  }
+</script>
+<script>
+  function ro(){
+    const div = document.getElementById('roDiv');
     div.style.display = div.style.display === 'block' ? 'none' : 'block';
   }
 </script>
@@ -2656,7 +2731,11 @@ document.getElementById("updateDiv"),
 document.getElementById("aiDiv"),
 document.getElementById("terminalDiv"),
 document.getElementById("emulatorDiv"),
-document.getElementById("movieDiv")
+document.getElementById("movieDiv"),
+document.getElementById("roDiv"),
+document.getElementById("settingsDiv")
+
+
 ];
 
 wins.forEach(win => {
