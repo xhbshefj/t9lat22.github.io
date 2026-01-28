@@ -1915,71 +1915,31 @@ requestAnimationFrame(trackFPS);
 </style>
 
 <style>
-
-
-
-.icon {
-  position: absolute;
-  width: 80px;
-  text-align: center;
-  cursor: default;
-}
-
-.icon img {
-  width: 48px;
-  height: 48px;
-  pointer-events: none;
-}
-
-.icon span {
-  display: block;
-  font-size: 12px;
-  margin-top: 6px;
-  line-height: 1.2;
-  color:white;
-  word-break: break-word;
-  pointer-events: none;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-
-}
-
-/* Optional: selection highlight */
-.icon.selected {
-  background: rgba(0, 120, 255, 0.35);
-  border-radius: 6px;
-}
-.icon:hover {
-  background: rgba(0, 120, 255, 0.35);
-  border-radius: 6px;
-}
-
-
+.icon { position: absolute; width: 80px; text-align: center; cursor: default; }
+.icon img { width: 48px; height: 48px; pointer-events: none; }
+.icon span { display: block; font-size: 12px; margin-top: 6px; line-height: 1.2; color:white; word-break: break-word; pointer-events: none; font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; }
+.icon.selected { background: rgba(0, 120, 255, 0.35); border-radius: 6px; }
+.icon:hover { background: rgba(0, 120, 255, 0.35); border-radius: 6px; }
 </style>
-  
-</div>
-   <div onclick="s()" class="icon" style="left:5px; top:120px;">
+
+<div onclick="s()" class="icon" style="left:5px; top:120px;">
     <img src="brow2.png" alt="browser">
     <span>T9 Browser</span>
-  </div>
-
-  <div onclick="settings()" class="icon" style="left:5px; top:220px;">
+</div>
+<div onclick="settings()" class="icon" style="left:5px; top:220px;">
     <img src="seting.png" alt="settings">
     <span>Settings</span>
-  </div>
-    <div onclick="ro()" class="icon" style="left:5px; top:320px;">
+</div>
+<div onclick="ro()" class="icon" style="left:5px; top:320px;">
     <img src="r2.png" alt="roblox">
     <span>Roblox</span>
-  </div>
-
-
-
-
+</div>
 
 <script>
-  const icons = document.querySelectorAll('.icon');
+const icons = document.querySelectorAll('.icon');
 const gridSize = 100;
-const offsetX = 5;  // Matches your HTML left: 5px
-const offsetY = 20; // Matches your HTML top: 120px/220px grid logic
+const offsetX = 5; 
+const offsetY = 20; 
 
 let draggingIcon = null;
 let mouseOffset = { x: 0, y: 0 };
@@ -1987,11 +1947,26 @@ let mouseStart = { x: 0, y: 0 };
 let isDragging = false;
 const dragThreshold = 5;
 
-// Precision snapping functions
 const snapX = (v) => Math.round((v - offsetX) / gridSize) * gridSize + offsetX;
 const snapY = (v) => Math.round((v - offsetY) / gridSize) * gridSize + offsetY;
 
-// Check for collisions using snapped coordinates
+// Helper to check if a specific X,Y spot is inside the .navbar.sidebar
+function hitsNavbar(x, y, width, height) {
+  const navbar = document.querySelector('.navbar.sidebar'); // Select explicitly
+  if (!navbar) return false; // If no navbar, no collision
+
+  const rect = navbar.getBoundingClientRect();
+  
+  // Check if our icon box overlaps the navbar box
+  return (
+    x < rect.right &&
+    x + width > rect.left &&
+    y < rect.bottom &&
+    y + height > rect.top
+  );
+}
+
+// Helper to check if hitting other icons
 function isOccupied(x, y, ignore) {
   return Array.from(icons).some(ic => 
     ic !== ignore && 
@@ -2009,30 +1984,28 @@ icons.forEach(icon => {
     icon.style.zIndex = 1000;
   });
 
-  // Captures and blocks the click if the mouse moved (dragging)
   icon.addEventListener('click', (e) => {
     if (isDragging) {
       e.stopImmediatePropagation();
       e.preventDefault();
     }
-  }, true); 
+  }, true);
 });
 
 document.addEventListener('mousemove', (e) => {
   if (!draggingIcon) return;
-
   const dx = e.clientX - mouseStart.x;
   const dy = e.clientY - mouseStart.y;
-
-  if (!isDragging && Math.hypot(dx, dy) > dragThreshold) {
-    isDragging = true;
-  }
-
+  if (!isDragging && Math.hypot(dx, dy) > dragThreshold) isDragging = true;
   if (!isDragging) return;
 
-  // Real-time movement logic
-  let x = Math.min(Math.max(e.clientX - mouseOffset.x, 0), window.innerWidth - draggingIcon.offsetWidth);
-  let y = Math.min(Math.max(e.clientY - mouseOffset.y, 0), window.innerHeight - draggingIcon.offsetHeight);
+  // Simple movement logic
+  let x = e.clientX - mouseOffset.x;
+  let y = e.clientY - mouseOffset.y;
+  
+  // Keep inside screen
+  x = Math.min(Math.max(x, 0), window.innerWidth - draggingIcon.offsetWidth);
+  y = Math.min(Math.max(y, 0), window.innerHeight - draggingIcon.offsetHeight);
 
   draggingIcon.style.left = x + 'px';
   draggingIcon.style.top = y + 'px';
@@ -2042,20 +2015,22 @@ document.addEventListener('mouseup', () => {
   if (!draggingIcon) return;
 
   if (isDragging) {
-    const targetX = snapX(draggingIcon.offsetLeft);
-    const targetY = snapY(draggingIcon.offsetTop);
+    let targetX = snapX(draggingIcon.offsetLeft);
+    let targetY = snapY(draggingIcon.offsetTop);
+    const w = draggingIcon.offsetWidth;
+    const h = draggingIcon.offsetHeight;
 
-    if (isOccupied(targetX, targetY, draggingIcon)) {
-      // Snap back to original grid spot if blocked
-      draggingIcon.style.left = snapX(mouseStart.x - mouseOffset.x) + 'px';
-      draggingIcon.style.top = snapY(mouseStart.y - mouseOffset.y) + 'px';
-    } else {
-      // Lock into new grid spot
-      draggingIcon.style.left = targetX + 'px';
-      draggingIcon.style.top = targetY + 'px';
+    // THE FIX: Loop that moves icon 10px right while it hits the navbar
+    while (hitsNavbar(targetX, targetY, w, h) || isOccupied(targetX, targetY, draggingIcon)) {
+      targetX += 10;
+      
+      // Stop if we hit the right edge of the screen
+      if (targetX > window.innerWidth - w) break;
     }
 
-    // Delay resetting the flag so 'click' event doesn't trigger 's()'
+    draggingIcon.style.left = targetX + 'px';
+    draggingIcon.style.top = targetY + 'px';
+
     setTimeout(() => { isDragging = false; }, 50);
   }
 
@@ -2064,9 +2039,7 @@ document.addEventListener('mouseup', () => {
 });
 
 document.addEventListener('selectstart', e => e.preventDefault());
-  </script>
-
-
+</script>
 
 
 
