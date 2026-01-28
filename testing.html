@@ -1900,14 +1900,14 @@ requestAnimationFrame(trackFPS);
 
 <script>
 const icons = document.querySelectorAll('.icon');
-const gridSize = 100; // grid spacing in px
-let isDragging = false;
+const gridSize = 100;
 let draggingIcon = null;
 let mouseOffset = { x: 0, y: 0 };
 let mouseStart = { x: 0, y: 0 };
-const dragThreshold = 5; // pixels to start dragging
+let isDragging = false;
+const dragThreshold = 5; // pixels to start drag
 
-// Snap helper
+// Snap to grid
 function snap(value) {
   return Math.round(value / gridSize) * gridSize;
 }
@@ -1934,14 +1934,22 @@ icons.forEach(icon => {
     mouseOffset.x = e.clientX - rect.left;
     mouseOffset.y = e.clientY - rect.top;
 
-    // Bring to front visually
     icon.style.zIndex = 1000;
+    isDragging = false; // will only become true if moved
   });
 
-  // Optional: allow normal click if not dragging
-  icon.addEventListener('click', (e) => {
-    if (isDragging) e.stopImmediatePropagation(); // prevent click if dragging
-  });
+  // Store original onclick
+  const originalOnClick = icon.onclick;
+
+  icon.onclick = function(e) {
+    if (isDragging) {
+      e.stopImmediatePropagation();
+      e.preventDefault(); // cancel click if dragging
+      return false;
+    }
+    // Run original click if it exists
+    if (originalOnClick) originalOnClick.call(this, e);
+  }
 });
 
 // ----- Mouse move -----
@@ -1951,7 +1959,6 @@ document.addEventListener('mousemove', (e) => {
   const dx = e.clientX - mouseStart.x;
   const dy = e.clientY - mouseStart.y;
 
-  // Only start dragging if moved enough pixels
   if (!isDragging && Math.hypot(dx, dy) > dragThreshold) {
     isDragging = true;
   }
@@ -1961,7 +1968,6 @@ document.addEventListener('mousemove', (e) => {
   let newX = e.clientX - mouseOffset.x;
   let newY = e.clientY - mouseOffset.y;
 
-  // Keep inside screen
   const maxX = window.innerWidth - draggingIcon.offsetWidth;
   const maxY = window.innerHeight - draggingIcon.offsetHeight;
   newX = Math.min(Math.max(newX, 0), maxX);
@@ -1980,7 +1986,7 @@ document.addEventListener('mouseup', () => {
     let snappedY = snap(draggingIcon.offsetTop);
 
     if (isOccupied(snappedX, snappedY, draggingIcon)) {
-      // Return to original spot
+      // Return to previous position if occupied
       draggingIcon.style.left = snap(draggingIcon.offsetLeft - mouseOffset.x) + 'px';
       draggingIcon.style.top = snap(draggingIcon.offsetTop - mouseOffset.y) + 'px';
     } else {
@@ -1990,13 +1996,14 @@ document.addEventListener('mouseup', () => {
   }
 
   draggingIcon.style.zIndex = '';
-  isDragging = false;
   draggingIcon = null;
+  isDragging = false;
 });
 
-// Prevent text selection while dragging
+// Prevent text selection
 document.addEventListener('selectstart', e => e.preventDefault());
 </script>
+
 
 
 
