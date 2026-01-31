@@ -50,6 +50,10 @@ Click the button below to instantly clone and deploy it on Vercel:
 
 * Works at school
 * No extensions needed
+
+
+
+credit to .ly hi you for that thing
 * Fast, clean UI
 * Easy to fork and customize
 * Works with — Mac, Chromebook, tablet (kinda), and PC
