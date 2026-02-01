@@ -2590,7 +2590,7 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, push, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
@@ -2606,20 +2606,13 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const connectionsRef = ref(db,"connections");
-const connectedRef = ref(db,".info/connected");
 
-onValue(connectedRef,(snap)=>{
-  if(snap.val()===true){
-    const myConn = push(connectionsRef);
-    set(myConn,true);
-    onDisconnect(myConn).remove();
-  }
-});
-
-onValue(connectionsRef,(snap)=>{
-  document.getElementById("count").innerText = snap.numChildren();
+// Only read the count and show it
+onValue(connectionsRef, (snapshot) => {
+  document.getElementById("count").innerText = snapshot.numChildren();
 });
 </script>
+
 <style>
   #notifications {
     position: fixed;

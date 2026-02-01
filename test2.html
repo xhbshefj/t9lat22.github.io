@@ -1,36 +1,44 @@
-<h2>👥 Online: <span id="count">0</span></h2>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test2 - Online Users</title>
+</head>
+<body style="text-align:center; font-family:Arial; margin-top:50px;">
+  <h2>👥 People Online: <span id="count">0</span></h2>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, push, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getDatabase, ref, push, set, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
-  authDomain: "t9oschat.firebaseapp.com",
-  databaseURL: "https://t9oschat-default-rtdb.firebaseio.com",
-  projectId: "t9oschat",
-  storageBucket: "t9oschat.firebasestorage.app",
-  messagingSenderId: "930534704832",
-  appId: "1:930534704832:web:c154890c3b5f36736f8f25"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyD74Fi2RKsvv1sXTAEIiTYrRKCv22MRhh8",
+    authDomain: "t9oschat.firebaseapp.com",
+    databaseURL: "https://t9oschat-default-rtdb.firebaseio.com",
+    projectId: "t9oschat",
+    storageBucket: "t9oschat.firebasestorage.app",
+    messagingSenderId: "930534704832",
+    appId: "1:930534704832:web:c154890c3b5f36736f8f25"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-const connectionsRef = ref(db,"connections");
-const connectedRef = ref(db,".info/connected");
+  const connectionsRef = ref(db,"connections");
+  const connectedRef = ref(db,".info/connected");
 
-// add this user
-onValue(connectedRef,(snap)=>{
-  if(snap.val()===true){
-    const myConn = push(connectionsRef);
-    set(myConn,true);
-    onDisconnect(myConn).remove();
-  }
-});
+  // Track this user as online
+  onValue(connectedRef, (snap) => {
+    if(snap.val() === true){
+      const myConn = push(connectionsRef);
+      set(myConn,true);
+      onDisconnect(myConn).remove();
+    }
+  });
 
-// show count
-onValue(connectionsRef,(snap)=>{
-  document.getElementById("count").innerText = snap.numChildren();
-});
-</script>
+  // Update the count on page
+  onValue(connectionsRef, (snapshot) => {
+    document.getElementById("count").innerText = snapshot.numChildren();
+  });
+  </script>
+</body>
+</html>
