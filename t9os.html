@@ -2952,7 +2952,7 @@ window.addEventListener("blur",stopAll);
   // 1. PREVENT WIDGET REFRESH ON ICON DRAG
   // ============================================
   
-  // Stop propagation of drag events that cause refreshes
+  // Track dragging state without blocking events
   let isDragging = false;
   let dragTarget = null;
   
@@ -2964,26 +2964,15 @@ window.addEventListener("blur",stopAll);
     if (icon || dragHandle || resizer) {
       isDragging = true;
       dragTarget = e.target;
-      
-      // Prevent any refresh triggers
-      e.stopPropagation();
     }
-  }, true);
-  
-  document.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-      // Stop event from bubbling up and triggering refreshes
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-    }
-  }, true);
+  }, false);
   
   document.addEventListener('mouseup', function(e) {
     if (isDragging) {
       isDragging = false;
       dragTarget = null;
     }
-  }, true);
+  }, false);
   
   // ============================================
   // 2. AGGRESSIVE CHROMEBOOK OPTIMIZATIONS
